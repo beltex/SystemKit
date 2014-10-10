@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C6443E619DF978500893F45 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6443E519DF978500893F45 /* main.swift */; };
+		4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8DC68C19E70BFC00E1A887 /* Battery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		4C6443E219DF978500893F45 /* SystemKit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SystemKit; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C6443E519DF978500893F45 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		4C8DC68C19E70BFC00E1A887 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				4C6443E519DF978500893F45 /* main.swift */,
+				4C8DC68C19E70BFC00E1A887 /* Battery.swift */,
 			);
 			path = SystemKit;
 			sourceTree = "<group>";
@@ -119,6 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C6443E619DF978500893F45 /* main.swift in Sources */,
+				4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +237,7 @@
 				4C6443EB19DF978500893F45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
