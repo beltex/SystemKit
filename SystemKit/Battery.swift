@@ -15,40 +15,30 @@ public class Battery {
     private let IOSERVICE_BATTERY = "AppleSmartBattery"
     
     
+    private var service : io_service_t = 0
+    
+    
     //--------------------------------------------------------------------------
     // MARK: PUBLIC METHODS
     //--------------------------------------------------------------------------
     
     
     public func open() -> kern_return_t {
-
-        // could there be more than one service? serveral batteries?
-        var service = IOServiceGetMatchingService(kIOMasterPortDefault,
+        // Could there be more than one service? serveral batteries?
+        service = IOServiceGetMatchingService(kIOMasterPortDefault,
                  IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue())
         
         if (service == 0) {
-            println("Failed to find service")
+            println("ERROR: Could not find \(IOSERVICE_BATTERY)")
+            return IOReturn.kIOReturnNotFound.rawValue
         }
         
-        //var dict : Unmanaged<CFMutableDictionary>?
-        //var result = IORegistryEntryCreateCFProperties(service, &dict, kCFAllocatorDefault, UInt32(kNilOptions))
-        //
-        //if (result != kIOReturnSuccess) {
-        //
-        //    println("Create dict error")
-        //}
-        //
-        //var test = dict?.takeUnretainedValue()
-        //
-        //var test2 = test! as Dictionary
-        //
-        //println(test2)
-        //
-        //
-        //dict?.release()
-        //IOObjectRelease(service)
-        
         return kIOReturnSuccess
+    }
+    
+    
+    public func close() -> kern_return_t {
+        return IOObjectRelease(service)
     }
     
     
@@ -68,7 +58,12 @@ public class Battery {
     
     
     public func cycleCount() -> Int {
-        return 0
+        let key : CFString = "CycleCount"
+        var prop = IORegistryEntryCreateCFProperty(service,
+                                                   key,
+                                                   kCFAllocatorDefault,
+                                                   UInt32(kNilOptions))
+        return prop.takeUnretainedValue() as Int
     }
     
     
@@ -91,7 +86,5 @@ public class Battery {
         return 0
     }
 }
-
-
 
 

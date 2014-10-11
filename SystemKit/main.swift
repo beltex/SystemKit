@@ -1,37 +1,58 @@
 
 import IOKit
 import Darwin
+import Foundation
 import CoreFoundation
 
 
-let IOSERVICE_BATTERY = "AppleSmartBattery"
+var battery = Battery()
+assert(battery.open() == kIOReturnSuccess)
 
-let map = IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
+println("Cycle Count: \(battery.cycleCount())")
 
-// could there be more than one service? serveral batteries?
-var service = IOServiceGetMatchingService(kIOMasterPortDefault, map)
-
-if (service == 0) {
-    println("Failed to find service")
-}
+battery.close()
 
 
+//let IOSERVICE_BATTERY = "AppleSmartBattery"
+//
+//let map = IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
+//
+//// could there be more than one service? serveral batteries?
+//var service = IOServiceGetMatchingService(kIOMasterPortDefault, map)
+//
+//if (service == 0) {
+//    println("Failed to find service")
+//}
+//
+//
+//
+//var dict : Unmanaged<CFMutableDictionary>?
+//var result = IORegistryEntryCreateCFProperties(service, &dict, kCFAllocatorDefault, UInt32(kNilOptions))
+//
+//if (result != kIOReturnSuccess) {
+//    
+//    println("Create dict error")
+//}
 
-var dict : Unmanaged<CFMutableDictionary>?
-var result = IORegistryEntryCreateCFProperties(service, &dict, kCFAllocatorDefault, UInt32(kNilOptions))
+//var str : NSString = "Hello"
+//var key : CFString = "CycleCount"
+//var prop = IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, UInt32(kNilOptions))
+//
+//var val = prop.takeUnretainedValue() as Int
+//println(val)
+//
+//var test = dict?.takeUnretainedValue()
 
-if (result != kIOReturnSuccess) {
-    
-    println("Create dict error")
-}
 
-var test = dict?.takeUnretainedValue()
+//var notePort = IONotificationPortCreate(kIOMasterPortDefault)
+
+//IONotificationPortSetDispatchQueue(<#notify: IONotificationPort!#>, <#queue: dispatch_queue_t!#>)
 
 //var test2 = test! as Dictionary
 //
-//println(test2)
+//println(test)
 
 
-dict?.release()
-IOObjectRelease(service)
+//dict?.release()
+//IOObjectRelease(service)
 
