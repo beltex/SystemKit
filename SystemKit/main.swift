@@ -9,6 +9,11 @@ var battery = Battery()
 assert(battery.open() == kIOReturnSuccess)
 
 println("Cycle Count: \(battery.cycleCount())")
+println("Design Count: \(battery.designCycleCount())")
+println("Is Charging: \(battery.isCharging())")
+println("Is Charged: \(battery.isCharged())")
+println("Health: \(battery.health())")
+println("TMP: \(battery.tmp(unit : Battery.TMP_Unit.Kelvin))")
 
 battery.close()
 
