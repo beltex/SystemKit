@@ -186,6 +186,17 @@ public class Battery {
     
     
     /**
+    Is this machine a laptop? By that we simply mean, does it have a battery?
+    
+    :returns: True if it is, false otherwise.
+    */
+    public func isLaptop() -> Bool {
+      // TODO: Implement
+      return true
+    }
+    
+    
+    /**
     What is the current health of the battery? This is a measure of how much the
     batteries capacity has dimished from the original. Thus, health =
     
