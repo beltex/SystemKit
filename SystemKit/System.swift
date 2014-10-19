@@ -65,11 +65,11 @@ public class System {
 
 
         // TODO: Check count size?
-        let data = processor_set_load_info(task_count: info_out.memory,
-                                    thread_count: info_out.advancedBy(1).memory,
-                                    load_average: info_out.advancedBy(2).memory,
-                                    mach_factor: info_out.advancedBy(3).memory)
-
+        let data = processor_set_load_info(task_count: info_out[0],
+                                           thread_count: info_out[1],
+                                           load_average: info_out[2],
+                                           mach_factor: info_out[3])
+    
         
         info_out.dealloc(Int(PROCESSOR_SET_LOAD_INFO_COUNT))
         
@@ -78,7 +78,7 @@ public class System {
     
     
     /**
-    Get the total number of processes running.
+    Get the total number of processes (tasks in Mach parlance) running.
     */
     public func processCount() -> Int32 {
         return loadInfo().task_count
@@ -90,5 +90,18 @@ public class System {
     */
     public func threadCount() -> Int32 {
         return loadInfo().thread_count
+    }
+    
+    
+    // TODO: Over what time range are these two loads over?
+    
+    
+    public func loadAvg() -> Double {
+        return Double(loadInfo().load_average) / Double(LOAD_SCALE)
+    }
+    
+    
+    public func machFactor() -> Double {
+        return Double(loadInfo().mach_factor) / Double(LOAD_SCALE)
     }
 }
