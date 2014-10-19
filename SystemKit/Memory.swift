@@ -52,7 +52,7 @@ public class Memory {
     :params: Optional unit value for return. Defaults to GB.
     :returns: The size as bytes
     */
-    public func physicalSize(unit : Unit = Unit.Gigabyte) -> Double {
+    public func physicalSize(unit : Unit = .Gigabyte) -> Double {
         var memsize : UInt64 = 0
         var opts = [CTL_HW, HW_MEMSIZE]
         var size = memsize_t_size

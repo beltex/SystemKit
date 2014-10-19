@@ -215,7 +215,7 @@ public class Battery {
     /**
     Get the current temperature of the battery.
     */
-    public func tmp(unit : TMP_Unit = TMP_Unit.Celsius) -> Double {
+    public func tmp(unit : TMP_Unit = .Celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.Temperature.rawValue,
                                                    kCFAllocatorDefault,

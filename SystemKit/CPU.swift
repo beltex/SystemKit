@@ -35,7 +35,9 @@ public class CPU {
     }
     
     
-    public func logicalCores() -> Int {
+    public func hostBasicInfo() -> host_basic_info {
+        // TODO: Why is host_basic_info.max_mem val different from sysctl?
+        
         var size = HOST_BASIC_INFO_COUNT
         var hi = host_info_t.alloc(Int(HOST_BASIC_INFO_COUNT))
         hi.initialize(0)
@@ -44,19 +46,32 @@ public class CPU {
         
         if (result != KERN_SUCCESS) {
             println("ERROR: \(__FUNCTION__) - \(result)")
-            return 0
+            return host_basic_info(max_cpus: 0, avail_cpus: 0,
+                                                memory_size: 0,
+                                                cpu_type: 0,
+                                                cpu_subtype: 0,
+                                                cpu_threadtype: 0,
+                                                physical_cpu: 0,
+                                                physical_cpu_max: 0,
+                                                logical_cpu: 0,
+                                                logical_cpu_max: 0,
+                                                max_mem: 0)
         }
         
-        let data = UnsafePointer<host_basic_info>(hi)
-        
-        let ans = Int(data.memory.logical_cpu)
+        let data = UnsafePointer<host_basic_info>(hi).memory
         
         hi.dealloc(Int(HOST_BASIC_INFO_COUNT))
-        return ans
+        
+        return data
+    }
+    
+    
+    public func logicalCores() -> Int {
+        return Int(hostBasicInfo().logical_cpu)
     }
     
     
     public func physicalCores() -> Int {
-        return 0
+        return Int(hostBasicInfo().physical_cpu)
     }
 }
