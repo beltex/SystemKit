@@ -93,6 +93,39 @@ public class System {
     }
     
     
+    public func kernelVersion() -> String {
+        // Basically gives the whole ouput of uname -a
+        
+        var ver = String()
+        var ptr = UnsafeMutablePointer<Int8>.alloc(Int(sizeof(kernel_version_t)))
+        ptr.initialize(0)
+        
+        let result = host_kernel_version(mach_host_self(), ptr)
+        
+        if (result != KERN_SUCCESS) {
+            #if DEBUG
+                println("ERROR: \(__FUNCTION__) - \(result)")
+            #endif
+            
+            return ver
+        }
+        
+
+        // Iterate through the array to get all the chars
+        for var i = 0; i < Int(sizeof(kernel_version_t)); ++i {
+            // Check if at the end
+            if (ptr[i] <= 0) {
+                break
+            }
+            
+            ver.append(UnicodeScalar(UInt32(ptr[i])))
+        }
+        
+        
+        return ver
+    }
+    
+    
     // TODO: Over what time range are these two loads over?
     
     
