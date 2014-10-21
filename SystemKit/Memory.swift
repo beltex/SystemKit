@@ -25,13 +25,13 @@ public class Memory {
     
     private let HOST_VM_INFO_COUNT : mach_msg_type_number_t = UInt32(sizeof(vm_statistics_data_t) / sizeof(integer_t))
     
+    private let HOST_VM_INFO64_COUNT : mach_msg_type_number_t = UInt32(sizeof(vm_statistics64_data_t) / sizeof(integer_t))
+    
     
     private let memsize_t_size : size_t = UInt(sizeof(UInt64))
     
     
     public func vmStatistics() -> vm_statistics {
-        // TODO: There is also host_statistics64() - HOST_VM_INFO64
-        
         var size = HOST_VM_INFO_COUNT
         var hi = host_info_t.alloc(Int(HOST_VM_INFO_COUNT))
         hi.initialize(0)
@@ -41,25 +41,72 @@ public class Memory {
         if (result != KERN_SUCCESS) {
             println("ERROR: \(__FUNCTION__) - \(result)")
             return vm_statistics(free_count: 0,
-                active_count: 0,
-                inactive_count: 0,
-                wire_count: 0,
-                zero_fill_count: 0,
-                reactivations: 0,
-                pageins: 0,
-                pageouts: 0,
-                faults: 0,
-                cow_faults: 0,
-                lookups: 0,
-                hits: 0,
-                purgeable_count: 0,
-                purges: 0,
-                speculative_count: 0)
+                                 active_count: 0,
+                                 inactive_count: 0,
+                                 wire_count: 0,
+                                 zero_fill_count: 0,
+                                 reactivations: 0,
+                                 pageins: 0,
+                                 pageouts: 0,
+                                 faults: 0,
+                                 cow_faults: 0,
+                                 lookups: 0,
+                                 hits: 0,
+                                 purgeable_count: 0,
+                                 purges: 0,
+                                 speculative_count: 0)
         }
         
         let data = UnsafePointer<vm_statistics>(hi).memory
         
         hi.dealloc(Int(HOST_VM_INFO_COUNT))
+        
+        return data
+    }
+    
+    
+    public func vmStatistics64() -> vm_statistics64 {
+        // Swift runs on 10.9 and above, and 10.9 is x86_64 only. On iOS though
+        // its 7 and above, with both ARM & ARM64
+        // TODO: For now we have two methods, but we could use arch macros
+        
+        var size = HOST_VM_INFO64_COUNT
+        var hi = host_info_t.alloc(Int(HOST_VM_INFO64_COUNT))
+        hi.initialize(0)
+        
+        let result = host_statistics64(mach_host_self(), HOST_VM_INFO64, hi, &size)
+        
+        if (result != KERN_SUCCESS) {
+            println("ERROR: \(__FUNCTION__) - \(result)")
+            return vm_statistics64(free_count: 0,
+                                   active_count: 0,
+                                   inactive_count: 0,
+                                   wire_count: 0,
+                                   zero_fill_count: 0,
+                                   reactivations: 0,
+                                   pageins: 0,
+                                   pageouts: 0,
+                                   faults: 0,
+                                   cow_faults: 0,
+                                   lookups: 0,
+                                   hits: 0,
+                                   purges: 0,
+                                   purgeable_count: 0,
+                                   speculative_count: 0,
+                                   decompressions: 0,
+                                   compressions: 0,
+                                   swapins: 0,
+                                   swapouts: 0,
+                                   compressor_page_count: 0,
+                                   throttled_count: 0,
+                                   external_page_count: 0,
+                                   internal_page_count: 0,
+                                   total_uncompressed_pages_in_compressor: 0)
+        }
+        
+        let data = UnsafePointer<vm_statistics64>(hi).memory
+        
+        hi.dealloc(Int(HOST_VM_INFO64_COUNT))
         
         return data
     }
