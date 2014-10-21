@@ -12,6 +12,9 @@ public class System {
     // Because Swift can't handle complex macros - move this to a centeral places with the rest
     public let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t = UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
     
+    private let HOST_SCHED_INFO_COUNT : mach_msg_type_number_t = UInt32(sizeof(host_sched_info_data_t)/sizeof(integer_t))
+    
+    
     
     var host : host_t
     var pset : processor_set_name_t
@@ -123,6 +126,29 @@ public class System {
         
         
         return ver
+    }
+    
+    
+    public func schedInfo() -> host_sched_info {
+        var size = HOST_SCHED_INFO_COUNT
+        
+        var hi = host_info_t.alloc(Int(HOST_SCHED_INFO_COUNT))
+        hi.initialize(0)
+        
+        let result = host_info(mach_host_self(), HOST_SCHED_INFO, hi, &size)
+        
+        if (result != KERN_SUCCESS) {
+            println("ERROR: \(__FUNCTION__) - \(result)")
+            
+            // TODO: Whats timeout?
+            return host_sched_info(min_timeout: 0, min_quantum: 0)
+        }
+        
+        let data = UnsafePointer<host_sched_info>(hi).memory
+        
+        hi.dealloc(Int(HOST_SCHED_INFO_COUNT))
+        
+        return data
     }
     
     

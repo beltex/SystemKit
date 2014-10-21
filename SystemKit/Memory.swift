@@ -68,6 +68,7 @@ public class Memory {
     public func vmStatistics64() -> vm_statistics64 {
         // Swift runs on 10.9 and above, and 10.9 is x86_64 only. On iOS though
         // its 7 and above, with both ARM & ARM64
+        // TODO: Does iOS 32-bit have supported for commpressed memory?
         // TODO: For now we have two methods, but we could use arch macros
         
         var size = HOST_VM_INFO64_COUNT
