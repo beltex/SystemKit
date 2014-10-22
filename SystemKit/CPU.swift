@@ -15,6 +15,9 @@ public class CPU {
     private let HOST_LOAD_INFO_COUNT: mach_msg_type_number_t = UInt32(sizeof(host_load_info_data_t)/sizeof(integer_t))
     
     
+    private let HOST_CPU_LOAD_INFO_COUNT : mach_msg_type_number_t = UInt32(sizeof (host_cpu_load_info_data_t) / sizeof (integer_t))
+    
+    
     //--------------------------------------------------------------------------
     // MARK: PUBLIC METHODS
     //--------------------------------------------------------------------------
@@ -84,6 +87,26 @@ public class CPU {
         let data = UnsafePointer<host_load_info>(hi).memory
         
         hi.dealloc(Int(HOST_LOAD_INFO_COUNT))
+        
+        return data
+    }
+    
+    
+    public func cpuLoadInfo() -> host_cpu_load_info {
+        var size = HOST_CPU_LOAD_INFO_COUNT
+        var hi = host_info_t.alloc(Int(HOST_CPU_LOAD_INFO_COUNT))
+        hi.initialize(0)
+        
+        let result = host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, hi, &size)
+        
+        if (result != KERN_SUCCESS) {
+            println("ERROR: \(__FUNCTION__) - \(result)")
+            return host_cpu_load_info(cpu_ticks: (0,0,0,0))
+        }
+        
+        let data = UnsafePointer<host_cpu_load_info>(hi).memory
+        
+        hi.dealloc(Int(HOST_CPU_LOAD_INFO_COUNT))
         
         return data
     }
