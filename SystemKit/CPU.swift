@@ -120,11 +120,11 @@ public class CPU {
         
         if (load_prev == nil) {
             println("FIRST CALL")
-            load_prev = cpu.cpuLoadInfo()
+            load_prev = cpuLoadInfo()
             sleep(1)
         }
     
-        let load = cpu.cpuLoadInfo()
+        let load = cpuLoadInfo()
     
         // Can't use supscript on tuple
         let user_diff = Double(load.cpu_ticks.0 - load_prev!.cpu_ticks.0)

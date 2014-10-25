@@ -6,6 +6,8 @@ import Foundation
 Memory API.
 */
 public class Memory {
+    
+    
     // TODO: Option for units? bytes, kb, mb, gb ?
     
     
@@ -74,7 +76,7 @@ public class Memory {
         var size = HOST_VM_INFO64_COUNT
         var hi = host_info_t.alloc(Int(HOST_VM_INFO64_COUNT))
         hi.initialize(0)
-        
+
         let result = host_statistics64(mach_host_self(), HOST_VM_INFO64, hi, &size)
         
         if (result != KERN_SUCCESS) {
@@ -113,22 +115,24 @@ public class Memory {
     }
     
     
+    public func memoryUsage() {
+        
+    }
+    
+    
     /**
     Get the default page size for the system.
     
     - Can check this via pagesize shell command as well
     - C lib function getpagesize()
+    - host_page_size()
     
     :returns: System default page size in bytes
     */
-    public func pageSize(unit : Unit = Unit.Byte) -> Double {
-        var port      : mach_port_t = mach_host_self()
-        var pageSize  : vm_size_t   = 0
-        
-        // Check return if debug on?
-        host_page_size(port, &pageSize)
-        
-        return Double(pageSize) / unit.rawValue
+    public func pageSize(unit : Unit = Unit.Byte) -> Double {        
+        // This page size var was added starting 10.9, and iOS 7, same as
+        // Swift's aval, thus we can use it
+        return Double(vm_kernel_page_size) / unit.rawValue
     }
     
     
