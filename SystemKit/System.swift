@@ -68,10 +68,7 @@ public class System {
 
 
         // TODO: Check count size?
-        let data = processor_set_load_info(task_count: info_out[0],
-                                           thread_count: info_out[1],
-                                           load_average: info_out[2],
-                                           mach_factor: info_out[3])
+        let data = UnsafePointer<processor_set_load_info>(info_out).memory
     
         
         info_out.dealloc(Int(PROCESSOR_SET_LOAD_INFO_COUNT))
