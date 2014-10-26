@@ -8,6 +8,9 @@ Memory API.
 public class Memory {
     
     
+    // TODO: This is better than using a func - pageSize()
+    public let PAGE_SIZE = vm_kernel_page_size
+    
     // TODO: Option for units? bytes, kb, mb, gb ?
     
     
@@ -115,8 +118,22 @@ public class Memory {
     }
     
     
-    public func memoryUsage() {
+    public func usage() -> (freem: Double, active: Double, inactive: Double, wired: Double, compressed: Double) {
+        let stats = vmStatistics64()
         
+        let freem = Double(stats.free_count) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+        let active = Double(stats.active_count) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+        let inactive = Double(stats.inactive_count) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+        let wired = Double(stats.wire_count) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+        
+        // Data size that was compressed
+        let compressed = Double(stats.compressions) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+
+        // Result of the compression
+        // This is what you see in Activity Monitor
+        let compressed_result = Double(stats.compressor_page_count) * Double(vm_kernel_page_size) / Double(Unit.Gigabyte.rawValue)
+        
+        return (freem, active, inactive, wired, compressed_result)
     }
     
     
