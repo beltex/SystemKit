@@ -7,12 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C04B0DB19F15E10009730FC /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04B0DA19F15E10009730FC /* Memory.swift */; };
-		4C04B0DD19F1C7FF009730FC /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04B0DC19F1C7FF009730FC /* Process.swift */; };
 		4C04B0DF19F2CB25009730FC /* System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04B0DE19F2CB25009730FC /* System.swift */; };
 		4C6443E619DF978500893F45 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6443E519DF978500893F45 /* main.swift */; };
 		4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8DC68C19E70BFC00E1A887 /* Battery.swift */; };
-		4CAABCE319E99AAE00D974C4 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAABCE219E99AAE00D974C4 /* CPU.swift */; };
 		4CAC81A119E8B56C00166B26 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAC81A019E8B56C00166B26 /* IOReturn.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,13 +26,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4C04B0DA19F15E10009730FC /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
-		4C04B0DC19F1C7FF009730FC /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		4C04B0DE19F2CB25009730FC /* System.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = System.swift; sourceTree = "<group>"; };
 		4C6443E219DF978500893F45 /* SystemKit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SystemKit; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C6443E519DF978500893F45 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4C8DC68C19E70BFC00E1A887 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
-		4CAABCE219E99AAE00D974C4 /* CPU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CPU.swift; sourceTree = "<group>"; };
 		4CAC81A019E8B56C00166B26 /* IOReturn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOReturn.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,9 +66,6 @@
 				4C6443E519DF978500893F45 /* main.swift */,
 				4C8DC68C19E70BFC00E1A887 /* Battery.swift */,
 				4CAC81A019E8B56C00166B26 /* IOReturn.swift */,
-				4CAABCE219E99AAE00D974C4 /* CPU.swift */,
-				4C04B0DA19F15E10009730FC /* Memory.swift */,
-				4C04B0DC19F1C7FF009730FC /* Process.swift */,
 				4C04B0DE19F2CB25009730FC /* System.swift */,
 			);
 			path = SystemKit;
@@ -136,13 +127,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CAABCE319E99AAE00D974C4 /* CPU.swift in Sources */,
 				4C04B0DF19F2CB25009730FC /* System.swift in Sources */,
 				4CAC81A119E8B56C00166B26 /* IOReturn.swift in Sources */,
 				4C6443E619DF978500893F45 /* main.swift in Sources */,
-				4C04B0DB19F15E10009730FC /* Memory.swift in Sources */,
 				4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */,
-				4C04B0DD19F1C7FF009730FC /* Process.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
