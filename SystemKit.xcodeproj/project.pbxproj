@@ -10,7 +10,6 @@
 		4C04B0DF19F2CB25009730FC /* System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04B0DE19F2CB25009730FC /* System.swift */; };
 		4C6443E619DF978500893F45 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6443E519DF978500893F45 /* main.swift */; };
 		4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8DC68C19E70BFC00E1A887 /* Battery.swift */; };
-		4CAC81A119E8B56C00166B26 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAC81A019E8B56C00166B26 /* IOReturn.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,7 +29,6 @@
 		4C6443E219DF978500893F45 /* SystemKit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SystemKit; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C6443E519DF978500893F45 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4C8DC68C19E70BFC00E1A887 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
-		4CAC81A019E8B56C00166B26 /* IOReturn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOReturn.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +63,6 @@
 			children = (
 				4C6443E519DF978500893F45 /* main.swift */,
 				4C8DC68C19E70BFC00E1A887 /* Battery.swift */,
-				4CAC81A019E8B56C00166B26 /* IOReturn.swift */,
 				4C04B0DE19F2CB25009730FC /* System.swift */,
 			);
 			path = SystemKit;
@@ -128,7 +125,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C04B0DF19F2CB25009730FC /* System.swift in Sources */,
-				4CAC81A119E8B56C00166B26 /* IOReturn.swift in Sources */,
 				4C6443E619DF978500893F45 /* main.swift in Sources */,
 				4C8DC68D19E70BFC00E1A887 /* Battery.swift in Sources */,
 			);
@@ -215,6 +211,7 @@
 		4C6443EA19DF978500893F45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
