@@ -9,3 +9,8 @@ SystemKit
 - hostinfo
 - top
 - iStat Pro
+
+
+### License
+
+This project is under the **MIT License**.
