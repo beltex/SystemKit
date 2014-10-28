@@ -269,6 +269,8 @@ public class Battery {
     */
     public func isLaptop() -> Bool {
       // TODO: Implement
+      // If AppleSmartBattery is in the I/O reg, then it's a laptop, otherwise
+      // not 
       return true
     }
     
