@@ -105,6 +105,19 @@ public class System {
     }
     
     
+    public enum LOAD_AVG {
+        /**
+        5, 30, 60 second samples
+        */
+        case SHORT
+        
+        /**
+        1, 5, 15 minute samples
+        */
+        case LONG
+    }
+    
+    
     //--------------------------------------------------------------------------
     // MARK: INITIALIZERS
     //--------------------------------------------------------------------------
@@ -192,12 +205,20 @@ public class System {
     }
     
     
-    public func loadAverage() -> (Double, Double, Double) {
-        let result = hostLoadInfo().avenrun
+    public func loadAverage(type : LOAD_AVG = .LONG) -> [Double] {
+        var avg = [Double](count: 3, repeatedValue: 0)
         
-        return (Double(result.0) / Double(LOAD_SCALE),
-                Double(result.1) / Double(LOAD_SCALE),
-                Double(result.2) / Double(LOAD_SCALE))
+        switch type {
+            case .SHORT:
+                let result = hostLoadInfo().avenrun
+                avg[0] = Double(result.0) / Double(LOAD_SCALE)
+                avg[1] = Double(result.1) / Double(LOAD_SCALE)
+                avg[2] = Double(result.0) / Double(LOAD_SCALE)
+            case .LONG:
+                getloadavg(&avg, 3)
+        }
+        
+        return avg
     }
     
     public func machFactor() -> (Double, Double, Double) {
@@ -406,7 +427,7 @@ public class System {
     
     
     /**
-    iOS 32-bit
+    32-bit virtual memory statistics. Used for 32-bit iOS devices.
     */
     public func VMStatistics() -> vm_statistics {
         var size = HOST_VM_INFO_COUNT
