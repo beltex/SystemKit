@@ -29,7 +29,7 @@ import IOKit
 import Foundation
 
 /**
-API to read stats from the battery.
+API to read stats from the battery. Only applicable to laptops (MacBooks).
 */
 public class Battery {
 
@@ -161,7 +161,8 @@ public class Battery {
     
     
     /**
-    Open a connection to the battery.
+    Open a connection to the battery. If this method fails, it may be because
+    the machine is not a laptop. See isLaptop().
     
     :returns: kIOReturnSuccess on successful connection to the battery.
     */
@@ -294,10 +295,10 @@ public class Battery {
     :returns: True if it is, false otherwise.
     */
     public func isLaptop() -> Bool {
-      // TODO: Implement
-      // If AppleSmartBattery is in the I/O reg, then it's a laptop, otherwise
-      // not 
-      return true
+      // If the AppleSmartBattery is in the I/O Registry, then it's a laptop
+      let exist = IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
+
+      return exist == 0 ? false : true
     }
     
     
@@ -346,9 +347,6 @@ public class Battery {
     //--------------------------------------------------------------------------
     // MARK: PRIVATE METHODS - HELPERS
     //--------------------------------------------------------------------------
-    
-    
-    // TODO: Move these to a global place, as CPU will propbably need them too
     
     
     /**
