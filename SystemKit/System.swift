@@ -29,7 +29,7 @@ import Darwin
 import Foundation
 
 /**
-System API. CPU, Memory, etc.
+CPU, Memory, Load, Task, Thread.
 */
 public class System {
     
@@ -255,6 +255,18 @@ public class System {
     
     
     public func memoryUsage() -> (freem: Double, active: Double, inactive: Double, wired: Double, compressed: Double) {
+/*
+
+
+Physical Memory: The amount of RAM installed.
+Memory Used: The amount of RAM being used and not immediately available.
+Virtual Memory: The amount of disk or flash drive space being used as virtual memory.
+Swap Used: The space on your drive being used to swap unused files to and from RAM.
+App Memory: The amount of space being used by apps.
+Wired Memory: Memory that can’t be cached to disk, so it must stay in RAM. This memory can’t be borrowed by other apps.
+Compressed: The amount of memory in RAM that is compressed.
+File Cache: The space being used to temporarily store files that are not currently being used.
+*/        
 //        #if os(OSX) || (os(iOS) && arch(arm64))
 //            println()
 //        #endif
@@ -430,6 +442,7 @@ public class System {
     32-bit virtual memory statistics. Used for 32-bit iOS devices.
     */
     public func VMStatistics() -> vm_statistics {
+        // This doesn't give you swap, may have to get it from sysctl
         var size = HOST_VM_INFO_COUNT
         var hi = host_info_t.alloc(Int(HOST_VM_INFO_COUNT))
         hi.initialize(0)

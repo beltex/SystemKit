@@ -1,5 +1,5 @@
 /*
-* System.swift
+* Battery.swift
 * SystemKit
 *
 * The MIT License (MIT)
