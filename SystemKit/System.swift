@@ -28,6 +28,142 @@
 import Darwin
 import Foundation
 
+
+struct libtop_i64_t {
+    var accumulator : UInt64
+    var last_value  : Int
+}
+
+struct libtop_i64_values_t {
+    var i64      : libtop_i64_t
+    var now      : UInt64
+    var began    : UInt64
+    var previous : UInt64
+}
+
+/*
+* Process sample information.
+*
+* Fields prefix meanings:
+*
+*   b_ : Value for first sample.
+*   p_ : Value for previous sample (invalid if p_seq is 0).
+*/
+struct libtop_psamp_s {
+    let uid  : uid_t
+    let pid  : pid_t
+    let	ppid : pid_t
+    let pgrp : gid_t
+    
+    /* Memory statistics. */
+    var rsize      : UInt64
+    var vsize      : UInt64
+    var rprvt      : UInt64
+    var vprvt      : UInt64
+    var rshrd      : UInt64
+    var fw_private : UInt64
+    var empty      : UInt64
+    
+    var reg        : UInt32
+    var p_reg      : UInt32
+    
+    // Previous
+    var p_rsize    : UInt64
+    var p_vprvt    : UInt64
+    var p_vsize    : UInt64
+    var p_rprvt    : UInt64
+    var p_rshrd    : UInt64
+    var p_empty    : UInt64
+    
+    /* Anonymous/purgeable memory statistics. */
+    var anonymous   : UInt64
+    var purgeable   : UInt64
+    var p_anonymous : UInt64
+    var p_purgeable : UInt64
+    
+    /* Compressed memory statistics. */
+    var compressed   : UInt64
+    var p_compressed : UInt64
+    
+    /* Number of threads. */
+    var th   : UInt32
+    var p_th : UInt32
+    
+    var running_th   : UInt32
+    var p_running_th : UInt32
+    
+    
+    /* Number of ports. */
+    var prt   : UInt32
+    var p_prt : UInt32
+    
+    /* CPU state/usage statistics. */
+    var state : Int /* Process state. */
+    
+    /* Total time consumed by process. */
+    // TODO: FIX TYPE - timeval
+    var total_time   : timeval32
+    var b_total_time : timeval32
+    var p_total_time : timeval32
+    
+    /* Event counters. */
+    var events   : task_events_info_data_t
+    var b_events : task_events_info_data_t
+    var p_events : task_events_info_data_t
+    
+    var faults        : libtop_i64_values_t
+    var pageins       : libtop_i64_values_t
+    var cow_faults    : libtop_i64_values_t
+    var messages_sent : libtop_i64_values_t
+    var messages_recv : libtop_i64_values_t
+    var syscalls_mach : libtop_i64_values_t
+    var syscalls_bsd  : libtop_i64_values_t
+    var csw           : libtop_i64_values_t
+    
+    var palloc : UInt64
+    var pfree  : UInt64
+    var salloc : UInt64
+    var sfree  : UInt64
+    
+    var p_palloc : UInt64
+    var p_pfree  : UInt64
+    var p_salloc : UInt64
+    var p_sfree  : UInt64
+    
+    /* malloc()ed '\0'-terminated string. */
+    //char			*command;
+    let command : String
+    
+    /* Sequence number, used to detect defunct processes. */
+    var seq : UInt32
+    
+    /*
+    * Previous sequence number, used to detect processes that have only
+    * existed for the current sample (p_seq == 0).
+    */
+    var p_seq : UInt32
+    
+    /* time process was started */
+    // TODO: Fix type - timeval
+    var started : timeval32
+    /* process cpu type */
+    var cputype : cpu_type_t
+    
+    var wq_nthreads        : UInt32
+    var wq_run_threads     : UInt32
+    var wq_blocked_threads : UInt32
+    
+    var p_wq_nthreads        : UInt32
+    var p_wq_run_threads     : UInt32
+    var p_wq_blocked_threads : UInt32
+    
+    /* Power info. */
+    var power   : task_power_info_data_t
+    var b_power : task_power_info_data_t
+    var p_power : task_power_info_data_t
+}
+
+
 /**
 CPU, Memory, Load, Task, Thread.
 */
