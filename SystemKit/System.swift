@@ -73,6 +73,8 @@ public class System {
                       UInt32(sizeof(host_sched_info_data_t) / sizeof(integer_t))
     private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
               UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
+    private let TASK_POWER_INFO_COUNT         : mach_msg_type_number_t =
+                     UInt32(sizeof(task_power_info_data_t) / sizeof (natural_t))
     
     
     /**
@@ -432,9 +434,64 @@ File Cache: The space being used to temporarily store files that are not current
     }
     
     
-    private func processorTasks() -> task_array_t {
-        //processor_set_tasks()
-        return task_array_t()
+    public func processList() { //-> task_array_t {
+        var psets = processor_set_name_array_t.alloc(1)
+        psets.initialize(0)
+        var pcnt  : mach_msg_type_number_t = 0
+
+        // Need root
+        var result = host_processor_sets(mach_host_self(), &psets, &pcnt)
+        if result != KERN_SUCCESS {
+            // DEBUG
+            // return
+        }
+        
+        
+        // For each CPU
+        result = host_processor_set_priv(mach_host_self(), psets[0], &pset);
+        if result != KERN_SUCCESS {
+            // DEBUG
+            // return
+        }
+        
+        
+        var processList = task_array_t.alloc(1)
+        processList.initialize(0)
+        var processCount  : mach_msg_type_number_t = 0
+        result = processor_set_tasks(pset, &processList, &processCount);
+        
+        
+//        for var i = 0; i < Int(processCount); ++i {
+//            let process = processList[i]
+//            var pid : pid_t = 0
+//            
+//            result = pid_for_task(process, &pid)
+//            
+//        }
+        
+        println(processPowerInformation(processList[70]))
+    }
+    
+    
+    private func processPowerInformation(process : task_t) -> task_power_info_data_t {
+        var count = TASK_POWER_INFO_COUNT
+        var powerInfo = task_info_t.alloc(Int(TASK_POWER_INFO_COUNT))
+        var result = task_info(process, UInt32(TASK_POWER_INFO), powerInfo, &count)
+        
+        if result != KERN_SUCCESS {
+            return task_power_info_data_t(total_user                 : 0,
+                                          total_system               : 0,
+                                          task_interrupt_wakeups     : 0,
+                                          task_platform_idle_wakeups : 0,
+                                          task_timer_wakeups_bin_1   : 0,
+                                          task_timer_wakeups_bin_2   : 0)
+        }
+        
+        let data = UnsafePointer<task_power_info_data_t>(powerInfo).memory
+        
+        powerInfo.dealloc(Int(TASK_POWER_INFO_COUNT))
+        
+        return data
     }
     
     
