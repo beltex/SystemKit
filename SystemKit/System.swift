@@ -50,10 +50,10 @@ struct libtop_i64_values_t {
 *   p_ : Value for previous sample (invalid if p_seq is 0).
 */
 struct libtop_psamp_s {
-    let uid  : uid_t
+    let uid  : uid_t  // User ID
     let pid  : pid_t
-    let	ppid : pid_t
-    let pgrp : gid_t
+    let	ppid : pid_t  // Parent PID
+    let pgrp : gid_t  // Proc group ID
     
     /* Memory statistics. */
     var rsize      : UInt64
@@ -209,8 +209,18 @@ public class System {
                       UInt32(sizeof(host_sched_info_data_t) / sizeof(integer_t))
     private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
               UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
+    private let TASK_BASIC_INFO_64_COUNT      : mach_msg_type_number_t =
+                   UInt32(sizeof(task_basic_info_64_data_t) / sizeof(natural_t))
+    private let TASK_EVENTS_INFO_COUNT		  : mach_msg_type_number_t =
+                     UInt32(sizeof(task_events_info_data_t) / sizeof(natural_t))
+    private let TASK_KERNELMEMORY_INFO_COUNT  : mach_msg_type_number_t =
+              UInt32(sizeof(task_kernelmemory_info_data_t) / sizeof (natural_t))
     private let TASK_POWER_INFO_COUNT         : mach_msg_type_number_t =
                      UInt32(sizeof(task_power_info_data_t) / sizeof (natural_t))
+    private let TASK_VM_INFO_COUNT            : mach_msg_type_number_t =
+                       UInt32(sizeof (task_vm_info_data_t) / sizeof (natural_t))
+    private let THREAD_BASIC_INFO_COUNT       : mach_msg_type_number_t =
+                    UInt32(sizeof(thread_basic_info_data_t) / sizeof(natural_t))
     
     
     /**
@@ -580,6 +590,8 @@ File Cache: The space being used to temporarily store files that are not current
         if result != KERN_SUCCESS {
             // DEBUG
             // return
+            println("ERROR - need root")
+            return
         }
         
         
@@ -588,6 +600,8 @@ File Cache: The space being used to temporarily store files that are not current
         if result != KERN_SUCCESS {
             // DEBUG
             // return
+            println("ERROR - get CPU")
+            return
         }
         
         
@@ -597,6 +611,13 @@ File Cache: The space being used to temporarily store files that are not current
         result = processor_set_tasks(pset, &processList, &processCount);
         
         
+        let process = processList[70]
+        var pid : pid_t = 0
+
+        result = pid_for_task(process, &pid)
+        
+        kInfoProc(pid)
+        
 //        for var i = 0; i < Int(processCount); ++i {
 //            let process = processList[i]
 //            var pid : pid_t = 0
@@ -605,7 +626,12 @@ File Cache: The space being used to temporarily store files that are not current
 //            
 //        }
         
-        println(processPowerInformation(processList[70]))
+        //println(processPowerInformation(processList[70]))
+    }
+    
+    
+    private func kInfoProc(pid : pid_t) {
+        kinfo_for_pid(pid)
     }
     
     
