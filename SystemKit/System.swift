@@ -618,6 +618,8 @@ File Cache: The space being used to temporarily store files that are not current
         
         kInfoProc(pid)
         
+        kInfoProc(9096)
+        
 //        for var i = 0; i < Int(processCount); ++i {
 //            let process = processList[i]
 //            var pid : pid_t = 0
@@ -631,7 +633,10 @@ File Cache: The space being used to temporarily store files that are not current
     
     
     private func kInfoProc(pid : pid_t) {
-        kinfo_for_pid(pid)
+        var kinfo_sk = kinfo_proc_systemkit(__p_starttime: timeval(tv_sec: 0, tv_usec: 0), p_flag: 0, p_stat: 0, p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), e_ucred: _ucred(cr_ref: 0, cr_uid: 0, cr_ngroups: 0, cr_groups: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)), e_ppid: 0, e_pgid: 0)
+        kinfo_for_pid(pid, &kinfo_sk)
+        
+        println(kinfo_sk.p_stat)
     }
     
     
