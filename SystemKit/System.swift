@@ -30,15 +30,15 @@ import Foundation
 
 
 struct libtop_i64_t {
-    var accumulator : UInt64
-    var last_value  : Int
+    var accumulator : UInt64 = 0
+    var last_value  : Int    = 0
 }
 
 struct libtop_i64_values_t {
-    var i64      : libtop_i64_t
-    var now      : UInt64
-    var began    : UInt64
-    var previous : UInt64
+    var i64               = libtop_i64_t()
+    var now      : UInt64 = 0
+    var began    : UInt64 = 0
+    var previous : UInt64 = 0
 }
 
 /*
@@ -50,117 +50,118 @@ struct libtop_i64_values_t {
 *   p_ : Value for previous sample (invalid if p_seq is 0).
 */
 struct libtop_psamp_s {
-    let uid  : uid_t  // User ID
-    let pid  : pid_t
-    let	ppid : pid_t  // Parent PID
-    let pgrp : gid_t  // Proc group ID
+    // TODO: Optionals?
+    // TODO: Better init values for some metrics, -1?
+    
+    let uid  : uid_t = 0 // User ID
+    let pid  : pid_t = 0
+    let	ppid : pid_t = 0 // Parent PID
+    let pgrp : gid_t = 0 // Proc group ID
     
     /* Memory statistics. */
-    var rsize      : UInt64
-    var vsize      : UInt64
-    var rprvt      : UInt64
-    var vprvt      : UInt64
-    var rshrd      : UInt64
-    var fw_private : UInt64
-    var empty      : UInt64
+    var rsize      : UInt64 = 0
+    var vsize      : UInt64 = 0
+    var rprvt      : UInt64 = 0
+    var vprvt      : UInt64 = 0
+    var rshrd      : UInt64 = 0
+    var fw_private : UInt64 = 0
+    var empty      : UInt64 = 0
     
-    var reg        : UInt32
-    var p_reg      : UInt32
+    var reg        : UInt32 = 0
+    var p_reg      : UInt32 = 0
     
     // Previous
-    var p_rsize    : UInt64
-    var p_vprvt    : UInt64
-    var p_vsize    : UInt64
-    var p_rprvt    : UInt64
-    var p_rshrd    : UInt64
-    var p_empty    : UInt64
+    var p_rsize    : UInt64 = 0
+    var p_vprvt    : UInt64 = 0
+    var p_vsize    : UInt64 = 0
+    var p_rprvt    : UInt64 = 0
+    var p_rshrd    : UInt64 = 0
+    var p_empty    : UInt64 = 0
     
     /* Anonymous/purgeable memory statistics. */
-    var anonymous   : UInt64
-    var purgeable   : UInt64
-    var p_anonymous : UInt64
-    var p_purgeable : UInt64
+    var anonymous   : UInt64 = 0
+    var purgeable   : UInt64 = 0
+    var p_anonymous : UInt64 = 0
+    var p_purgeable : UInt64 = 0
     
     /* Compressed memory statistics. */
-    var compressed   : UInt64
-    var p_compressed : UInt64
+    var compressed   : UInt64 = 0
+    var p_compressed : UInt64 = 0
     
     /* Number of threads. */
-    var th   : UInt32
-    var p_th : UInt32
+    var th   : UInt32 = 0
+    var p_th : UInt32 = 0
     
-    var running_th   : UInt32
-    var p_running_th : UInt32
+    var running_th   : UInt32 = 0
+    var p_running_th : UInt32 = 0
     
     
     /* Number of ports. */
-    var prt   : UInt32
-    var p_prt : UInt32
+    var prt   : UInt32 = 0
+    var p_prt : UInt32 = 0
     
     /* CPU state/usage statistics. */
-    var state : Int /* Process state. */
+    var state : Int = 0 /* Process state. */
     
     /* Total time consumed by process. */
-    // TODO: FIX TYPE - timeval
-    var total_time   : timeval32
-    var b_total_time : timeval32
-    var p_total_time : timeval32
+    var total_time   = timeval(tv_sec: 0, tv_usec: 0)
+    var b_total_time = timeval(tv_sec: 0, tv_usec: 0)
+    var p_total_time = timeval(tv_sec: 0, tv_usec: 0)
     
     /* Event counters. */
-    var events   : task_events_info_data_t
-    var b_events : task_events_info_data_t
-    var p_events : task_events_info_data_t
+    var events   = task_events_info_data_t(faults: 0, pageins: 0, cow_faults: 0, messages_sent: 0, messages_received: 0, syscalls_mach: 0, syscalls_unix: 0, csw: 0)
+    var b_events = task_events_info_data_t(faults: 0, pageins: 0, cow_faults: 0, messages_sent: 0, messages_received: 0, syscalls_mach: 0, syscalls_unix: 0, csw: 0)
+    var p_events = task_events_info_data_t(faults: 0, pageins: 0, cow_faults: 0, messages_sent: 0, messages_received: 0, syscalls_mach: 0, syscalls_unix: 0, csw: 0)
     
-    var faults        : libtop_i64_values_t
-    var pageins       : libtop_i64_values_t
-    var cow_faults    : libtop_i64_values_t
-    var messages_sent : libtop_i64_values_t
-    var messages_recv : libtop_i64_values_t
-    var syscalls_mach : libtop_i64_values_t
-    var syscalls_bsd  : libtop_i64_values_t
-    var csw           : libtop_i64_values_t
+    var faults        = libtop_i64_values_t()
+    var pageins       = libtop_i64_values_t()
+    var cow_faults    = libtop_i64_values_t()
+    var messages_sent = libtop_i64_values_t()
+    var messages_recv = libtop_i64_values_t()
+    var syscalls_mach = libtop_i64_values_t()
+    var syscalls_bsd  = libtop_i64_values_t()
+    var csw           = libtop_i64_values_t()
     
-    var palloc : UInt64
-    var pfree  : UInt64
-    var salloc : UInt64
-    var sfree  : UInt64
+    var palloc : UInt64 = 0
+    var pfree  : UInt64 = 0
+    var salloc : UInt64 = 0
+    var sfree  : UInt64 = 0
     
-    var p_palloc : UInt64
-    var p_pfree  : UInt64
-    var p_salloc : UInt64
-    var p_sfree  : UInt64
+    var p_palloc : UInt64 = 0
+    var p_pfree  : UInt64 = 0
+    var p_salloc : UInt64 = 0
+    var p_sfree  : UInt64 = 0
     
     /* malloc()ed '\0'-terminated string. */
     //char			*command;
-    let command : String
+    let command = String()
     
     /* Sequence number, used to detect defunct processes. */
-    var seq : UInt32
+    var seq : UInt32 = 0
     
     /*
     * Previous sequence number, used to detect processes that have only
     * existed for the current sample (p_seq == 0).
-    */
-    var p_seq : UInt32
+    */ 
+    var p_seq : UInt32 = 0
     
     /* time process was started */
-    // TODO: Fix type - timeval
-    var started : timeval32
+    var started = timeval(tv_sec: 0, tv_usec: 0)
     /* process cpu type */
-    var cputype : cpu_type_t
+    var cputype : cpu_type_t = 0
     
-    var wq_nthreads        : UInt32
-    var wq_run_threads     : UInt32
-    var wq_blocked_threads : UInt32
+    var wq_nthreads        : UInt32 = 0
+    var wq_run_threads     : UInt32 = 0
+    var wq_blocked_threads : UInt32 = 0
     
-    var p_wq_nthreads        : UInt32
-    var p_wq_run_threads     : UInt32
-    var p_wq_blocked_threads : UInt32
+    var p_wq_nthreads        : UInt32 = 0
+    var p_wq_run_threads     : UInt32 = 0
+    var p_wq_blocked_threads : UInt32 = 0
     
     /* Power info. */
-    var power   : task_power_info_data_t
-    var b_power : task_power_info_data_t
-    var p_power : task_power_info_data_t
+    var power   = task_power_info_data_t(total_user: 0, total_system: 0, task_interrupt_wakeups: 0, task_platform_idle_wakeups: 0, task_timer_wakeups_bin_1: 0, task_timer_wakeups_bin_2: 0)
+    var b_power = task_power_info_data_t(total_user: 0, total_system: 0, task_interrupt_wakeups: 0, task_platform_idle_wakeups: 0, task_timer_wakeups_bin_1: 0, task_timer_wakeups_bin_2: 0)
+    var p_power = task_power_info_data_t(total_user: 0, total_system: 0, task_interrupt_wakeups: 0, task_platform_idle_wakeups: 0, task_timer_wakeups_bin_1: 0, task_timer_wakeups_bin_2: 0)
 }
 
 
@@ -611,34 +612,46 @@ File Cache: The space being used to temporarily store files that are not current
         result = processor_set_tasks(pset, &processList, &processCount);
         
         
-        let process = processList[70]
-        var pid : pid_t = 0
-
-        result = pid_for_task(process, &pid)
+//        let process = processList[70]
+//        var pid : pid_t = 0
+//
+//        result = pid_for_task(process, &pid)
+//        
+//        kInfoProc(pid)
+//        
+//        kInfoProc(9096)
         
-        kInfoProc(pid)
+        var procList : [libtop_psamp_s] = []
         
-        kInfoProc(9096)
-        
-//        for var i = 0; i < Int(processCount); ++i {
-//            let process = processList[i]
-//            var pid : pid_t = 0
-//            
-//            result = pid_for_task(process, &pid)
-//            
-//        }
+        for var i = 0; i < Int(processCount); ++i {
+            let process = processList[i]
+            var pid : pid_t = 0
+            
+            
+            result = pid_for_task(process, &pid)
+            
+            var kinfo_sk = kinfo_proc_systemkit(__p_starttime: timeval(tv_sec: 0, tv_usec: 0),
+                                                p_flag: 0, p_stat: 0,
+                                                p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                                                e_ucred: _ucred(cr_ref: 0, cr_uid: 0, cr_ngroups: 0, cr_groups: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+                                                e_ppid: 0, e_pgid: 0)
+            kinfo_for_pid(pid, &kinfo_sk)
+            
+            
+            
+            let uid     = kinfo_sk.e_ucred.cr_uid
+            let ppid    = kinfo_sk.e_ppid
+            let pgrp    = kinfo_sk.e_pgid
+//            let flag    = kinfo.kp_proc.p_flag
+//            let started = kinfo.kp_proc.p_starttime
+            
+            //let p_seq = pinfo->psamp.seq
+//            let seq = tsamp.seq
+        }
         
         //println(processPowerInformation(processList[70]))
     }
-    
-    
-    private func kInfoProc(pid : pid_t) {
-        var kinfo_sk = kinfo_proc_systemkit(__p_starttime: timeval(tv_sec: 0, tv_usec: 0), p_flag: 0, p_stat: 0, p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), e_ucred: _ucred(cr_ref: 0, cr_uid: 0, cr_ngroups: 0, cr_groups: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)), e_ppid: 0, e_pgid: 0)
-        kinfo_for_pid(pid, &kinfo_sk)
-        
-        println(kinfo_sk.p_stat)
-    }
-    
+
     
     private func processPowerInformation(process : task_t) -> task_power_info_data_t {
         var count = TASK_POWER_INFO_COUNT
