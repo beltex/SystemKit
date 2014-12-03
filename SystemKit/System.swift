@@ -53,10 +53,11 @@ struct libtop_psamp_s {
     // TODO: Optionals?
     // TODO: Better init values for some metrics, -1?
     
-    let uid  : uid_t = 0 // User ID
-    let pid  : pid_t = 0
-    let	ppid : pid_t = 0 // Parent PID
-    let pgrp : gid_t = 0 // Proc group ID
+    // TODO: These should be const right?
+    var uid  : uid_t = 0 // User ID
+    var pid  : pid_t = 0
+    var	ppid : pid_t = 0 // Parent PID
+    var pgrp : gid_t = 0 // Proc group ID
     
     /* Memory statistics. */
     var rsize      : UInt64 = 0
@@ -612,18 +613,11 @@ File Cache: The space being used to temporarily store files that are not current
         result = processor_set_tasks(pset, &processList, &processCount);
         
         
-//        let process = processList[70]
-//        var pid : pid_t = 0
-//
-//        result = pid_for_task(process, &pid)
-//        
-//        kInfoProc(pid)
-//        
-//        kInfoProc(9096)
-        
         var procList : [libtop_psamp_s] = []
         
+        // For each proc
         for var i = 0; i < Int(processCount); ++i {
+            var pinfo = libtop_psamp_s()
             let process = processList[i]
             var pid : pid_t = 0
             
@@ -638,20 +632,43 @@ File Cache: The space being used to temporarily store files that are not current
             kinfo_for_pid(pid, &kinfo_sk)
             
             
+            pinfo.uid  = kinfo_sk.e_ucred.cr_uid
+            pinfo.ppid = kinfo_sk.e_ppid
+            pinfo.pgrp = kinfo_sk.e_pgid
+            //pinfo. = kinfo_sk.p_flag  // TODO: set this - see libtop_pinfo_s
+            pinfo.started = kinfo_sk.__p_starttime
             
-            let uid     = kinfo_sk.e_ucred.cr_uid
-            let ppid    = kinfo_sk.e_ppid
-            let pgrp    = kinfo_sk.e_pgid
-//            let flag    = kinfo.kp_proc.p_flag
-//            let started = kinfo.kp_proc.p_starttime
-            
-            //let p_seq = pinfo->psamp.seq
-//            let seq = tsamp.seq
+            pinfo.p_seq = pinfo.seq
+            //pinfo.seq   = tsamp.seq  // TODO: Set this
         }
-        
-        //println(processPowerInformation(processList[70]))
     }
 
+
+    private func processMemoryInformation(process : task_t) -> task_basic_info_64_data_t {
+        var count = TASK_BASIC_INFO_64_COUNT
+        var memoryInfo = task_info_t.alloc(Int(TASK_BASIC_INFO_64_COUNT))
+
+        var result = task_info(process, UInt32(TASK_BASIC_INFO_64), memoryInfo, &count)
+
+        if (result != KERN_SUCCESS) {
+            // TODO: Or maybe just return memoryInfo?
+            // TODO: Should we return result as well?
+            return task_basic_info_64_data_t(suspend_count: 0,
+                                             virtual_size: 0,
+                                             resident_size: 0,
+                                             user_time: time_value_t(seconds: 0, microseconds: 0),
+                                             system_time: time_value_t(seconds: 0, microseconds: 0),
+                                             policy: 0)
+        }
+
+        let data = UnsafePointer<task_basic_info_64_data_t>(memoryInfo).memory
+        
+        memoryInfo.dealloc(Int(TASK_BASIC_INFO_64_COUNT))
+        
+        return data
+
+    }
+    
     
     private func processPowerInformation(process : task_t) -> task_power_info_data_t {
         var count = TASK_POWER_INFO_COUNT

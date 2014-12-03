@@ -14,7 +14,8 @@ typedef struct {
     char	p_comm[MAXCOMLEN+1];
     struct	_ucred e_ucred;		      // Current credentials
     pid_t	e_ppid;                   // Parent process id
-    pid_t	e_pgid;                   // Process group id
+    // TODO: Why does kinfo_proc have this as pid_t? top works with it as gid_t
+    gid_t	e_pgid;                   // Process group id
 } kinfo_proc_systemkit;
 
 int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk);
