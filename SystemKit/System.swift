@@ -616,7 +616,7 @@ File Cache: The space being used to temporarily store files that are not current
         var procList : [libtop_psamp_s] = []
         
         // For each proc
-        for var i = 0; i < Int(processCount); ++i {
+        for var i = 17; i < Int(processCount); ++i {
             var pinfo = libtop_psamp_s()
             let process = processList[i]
             var pid : pid_t = 0
@@ -640,11 +640,15 @@ File Cache: The space being used to temporarily store files that are not current
             
             pinfo.p_seq = pinfo.seq
             //pinfo.seq   = tsamp.seq  // TODO: Set this
+            
+            processMachPorts(process)
+            processMemoryInformation(process)
+            break
         }
     }
 
 
-    private func processMemoryInformation(process : task_t) -> task_basic_info_64_data_t {
+    private func processMemoryInformation(process: task_t) -> task_basic_info_64_data_t {
         var count = TASK_BASIC_INFO_64_COUNT
         var memoryInfo = task_info_t.alloc(Int(TASK_BASIC_INFO_64_COUNT))
 
@@ -665,8 +669,96 @@ File Cache: The space being used to temporarily store files that are not current
         
         memoryInfo.dealloc(Int(TASK_BASIC_INFO_64_COUNT))
         
+        println("VIRT MEM: \(data.virtual_size)")
+        
         return data
 
+    }
+    
+    
+    /**
+    Wired memory usage
+    */
+    private func processKerenlMemoryInformation(process: task_t) {
+        /*
+        kern_return_t kr;
+        
+        mach_msg_type_number_t count = TASK_KERNELMEMORY_INFO_COUNT;
+        
+        pinfo->psamp.p_palloc = pinfo->psamp.palloc;
+        pinfo->psamp.p_pfree = pinfo->psamp.pfree;
+        pinfo->psamp.p_salloc = pinfo->psamp.salloc;
+        pinfo->psamp.p_sfree = pinfo->psamp.sfree;
+        
+        kr = task_info(task, TASK_KERNELMEMORY_INFO, (task_info_t)&pinfo->psamp.palloc, &count);
+        return kr;
+        */
+        
+        
+        var result: kern_return_t
+        var count: mach_msg_type_number_t = TASK_KERNELMEMORY_INFO_COUNT
+        
+        // TODO: Why just palloc?
+        var palloc = task_info_t.alloc(Int(TASK_KERNELMEMORY_INFO_COUNT))
+        
+        result = task_info(process, TASK_KERNELMEMORY_INFO_COUNT, palloc, &count)
+        
+        if result != KERN_SUCCESS {
+            return
+        }
+        
+        let data = UnsafePointer<task_power_info_data_t>(palloc).memory
+        
+        palloc.dealloc(Int(TASK_KERNELMEMORY_INFO_COUNT))
+        
+        //return data
+        
+    }
+    
+    
+    /**
+    Number of Mach ports
+    */
+    private func processMachPorts(process : task_t) {
+        // http://www.gnu.org/software/hurd/gnumach-doc/Port-Names.html
+        /*
+        kern_return_t kr;
+        mach_msg_type_number_t ncnt, tcnt;
+        mach_port_name_array_t names;
+        mach_port_type_array_t types;
+        
+        pinfo->psamp.p_prt = pinfo->psamp.prt;
+        
+        kr = mach_port_names(task, &names, &ncnt, &types, &tcnt);
+        if (kr != KERN_SUCCESS) return 0;
+        
+        pinfo->psamp.prt = ncnt;
+        
+        kr = mach_vm_deallocate(mach_task_self(), (mach_vm_address_t)(uintptr_t)names, ncnt * sizeof(*names));
+        kr = mach_vm_deallocate(mach_task_self(), (mach_vm_address_t)(uintptr_t)types, tcnt * sizeof(*types));
+        */
+        
+        var result: kern_return_t
+        var ncnt: mach_msg_type_number_t = 0
+        var tcnt: mach_msg_type_number_t = 0
+        var names = mach_port_name_array_t.alloc(1)
+        var types = mach_port_type_array_t.alloc(1)
+        
+        // UnsafeMutablePointer<mach_port_name_array_t>
+        result = mach_port_names(process, &names, &ncnt, &types, &tcnt)
+        
+        if (result != KERN_SUCCESS) {
+            println("PORT CALL: \(result)")
+            return
+        }
+    
+        println("PORT COUNT: \(ncnt)")
+
+        // http://web.mit.edu/darwin/src/modules/xnu/osfmk/man/vm_deallocate.html
+        var address: mach_vm_address_t = UnsafePointer<mach_vm_address_t>(names).memory
+        result = mach_vm_deallocate(mach_task_self_, address, UInt64(ncnt) * UInt64(sizeof(mach_port_name_t)))
+        
+        println("DEALLOC: \(result)")
     }
     
     
