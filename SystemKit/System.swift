@@ -463,7 +463,7 @@ File Cache: The space being used to temporarily store files that are not current
         //  devices. The arch(i386) build configuration returns true when code
         //  is compiled for the 32–bit iOS simulator." ...
 //        #if arch(i386) || arch(x86_64)
-            return procCPUType == CPU_TYPE_X86_64 || procCPUType == CPU_TYPE_X86
+            return procCPUType != CPU_TYPE_X86_64 && procCPUType != CPU_TYPE_X86
 //        #elseif arch(arm) || arch(arm64)
 //            return procCPUType == CPU_TYPE_ARM || procCPUType == CPU_TYPE_ARM_64
 //        #endif
@@ -472,6 +472,35 @@ File Cache: The space being used to temporarily store files that are not current
     
     public class func isProc64Bit(procCPUType: cpu_type_t) -> Bool {
         return procCPUType == CPU_TYPE_X86_64
+    }
+    
+    
+    private func getProcCPUType(pid: pid_t) -> cpu_type_t {
+        var result :Int32 = -1
+        var miblen = UInt(CTL_MAXNAME)
+        // count: CTL_MAXNAME
+        var mib    = [Int32](count: 12, repeatedValue:0)
+        var cputype : cpu_type_t = 0
+        
+        result = sysctlnametomib("sysctl.proc_cputype", &mib, &miblen)
+        
+        if (result != 0) {
+            miblen = 0
+            println("1 - ERROR getting CPU type for proc")
+        }
+        
+        if (miblen > 0) {
+            mib[Int(miblen)] = pid
+            var len : size_t = UInt(sizeof(cpu_type_t))
+            
+            result = sysctl(&mib, UInt32(miblen + UInt(1)), &cputype, &len, nil, 0)
+        }
+        
+        if (result != 0) {
+            println("2 - ERROR getting CPU type for proc")
+        }
+        
+        return cputype
     }
     
     
@@ -657,7 +686,7 @@ File Cache: The space being used to temporarily store files that are not current
             
             result = pid_for_task(process, &pid)
             
-            if (pid != 17157) {
+            if (pid != 15496) {
                 continue
             }
             
@@ -684,6 +713,11 @@ File Cache: The space being used to temporarily store files that are not current
             var power = processPowerInformationV2(process)
             
             println("GPU POWER: \(power.gpu_energy.task_gpu_utilisation)")
+            
+            var cpuType = getProcCPUType(pid)
+            println("PROC TYPE: \(cpuType)")
+            println("PROC Foreign: \(isProcforeign(cpuType))")
+            println("PROC 64-bit: \(System.isProc64Bit(cpuType))")
             
             break
         }
