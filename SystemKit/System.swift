@@ -29,6 +29,7 @@ import Darwin
 import Foundation
 
 // Via <mach/machine.h>
+// TODO: Public or private? Depends if we decide to return cpu_type to user
 
 let CPU_TYPE_X86       : cpu_type_t = 7
 let CPU_TYPE_I386      : cpu_type_t = CPU_TYPE_X86
@@ -226,11 +227,13 @@ public class System {
     private let TASK_EVENTS_INFO_COUNT		  : mach_msg_type_number_t =
                      UInt32(sizeof(task_events_info_data_t) / sizeof(natural_t))
     private let TASK_KERNELMEMORY_INFO_COUNT  : mach_msg_type_number_t =
-              UInt32(sizeof(task_kernelmemory_info_data_t) / sizeof (natural_t))
+               UInt32(sizeof(task_kernelmemory_info_data_t) / sizeof(natural_t))
     private let TASK_POWER_INFO_COUNT         : mach_msg_type_number_t =
-                     UInt32(sizeof(task_power_info_data_t) / sizeof (natural_t))
+                      UInt32(sizeof(task_power_info_data_t) / sizeof(natural_t))
+    private let TASK_POWER_INFO_V2_COUNT	  : mach_msg_type_number_t =
+                   UInt32(sizeof(task_power_info_v2_data_t) / sizeof(natural_t))
     private let TASK_VM_INFO_COUNT            : mach_msg_type_number_t =
-                       UInt32(sizeof (task_vm_info_data_t) / sizeof (natural_t))
+                         UInt32(sizeof(task_vm_info_data_t) / sizeof(natural_t))
     private let THREAD_BASIC_INFO_COUNT       : mach_msg_type_number_t =
                     UInt32(sizeof(thread_basic_info_data_t) / sizeof(natural_t))
     
@@ -456,7 +459,14 @@ File Cache: The space being used to temporarily store files that are not current
     // Assuming x86 for now
     
     public func isProcforeign(procCPUType: cpu_type_t) -> Bool {
-        return procCPUType == CPU_TYPE_X86_64 || procCPUType == CPU_TYPE_X86
+        // "The arch(arm) build configuration does not return true for ARM 64
+        //  devices. The arch(i386) build configuration returns true when code
+        //  is compiled for the 32–bit iOS simulator." ...
+//        #if arch(i386) || arch(x86_64)
+            return procCPUType == CPU_TYPE_X86_64 || procCPUType == CPU_TYPE_X86
+//        #elseif arch(arm) || arch(arm64)
+//            return procCPUType == CPU_TYPE_ARM || procCPUType == CPU_TYPE_ARM_64
+//        #endif
     }
     
     
@@ -637,8 +647,9 @@ File Cache: The space being used to temporarily store files that are not current
         
         var procList : [libtop_psamp_s] = []
         
+        
         // For each proc
-        for var i = 17; i < Int(processCount); ++i {
+        for var i = 0; i < Int(processCount); ++i {
             var pinfo = libtop_psamp_s()
             let process = processList[i]
             var pid : pid_t = 0
@@ -646,6 +657,11 @@ File Cache: The space being used to temporarily store files that are not current
             
             result = pid_for_task(process, &pid)
             
+            if (pid != 17157) {
+                continue
+            }
+            
+            println("PID: \(pid)")
             var kinfo_sk = kinfo_proc_systemkit(__p_starttime: timeval(tv_sec: 0, tv_usec: 0),
                                                 p_flag: 0, p_stat: 0,
                                                 p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -665,6 +681,10 @@ File Cache: The space being used to temporarily store files that are not current
             
             processMachPorts(process)
             processMemoryInformation(process)
+            var power = processPowerInformationV2(process)
+            
+            println("GPU POWER: \(power.gpu_energy.task_gpu_utilisation)")
+            
             break
         }
     }
@@ -801,6 +821,34 @@ File Cache: The space being used to temporarily store files that are not current
         let data = UnsafePointer<task_power_info_data_t>(powerInfo).memory
         
         powerInfo.dealloc(Int(TASK_POWER_INFO_COUNT))
+        
+        return data
+    }
+    
+    
+    private func processPowerInformationV2(process: task_t) -> task_power_info_v2_data_t {
+        // Doesn't seem to work. Maybe need a newer GPU? Discrete GPU?
+        // GPU - Returns the total gpu time used by the all the threads of the task
+        
+        var count = TASK_POWER_INFO_V2_COUNT
+        var powerInfo = task_info_t.alloc(Int(TASK_POWER_INFO_V2_COUNT))
+        var result = task_info(process, UInt32(TASK_POWER_INFO_V2), powerInfo, &count)
+        
+        if result != KERN_SUCCESS {
+           let temp = task_power_info_data_t(total_user                 : 0,
+                            total_system               : 0,
+                            task_interrupt_wakeups     : 0,
+                            task_platform_idle_wakeups : 0,
+                            task_timer_wakeups_bin_1   : 0,
+                            task_timer_wakeups_bin_2   : 0)
+            let gpu_temp = gpu_energy_data(task_gpu_utilisation: 0, task_gpu_stat_reserved0: 0, task_gpu_stat_reserved1: 0, task_gpu_stat_reserved2: 0)
+            return task_power_info_v2_data_t(cpu_energy: temp, gpu_energy: gpu_temp)
+
+        }
+        
+        let data = UnsafePointer<task_power_info_v2_data_t>(powerInfo).memory
+        
+        powerInfo.dealloc(Int(TASK_POWER_INFO_V2_COUNT))
         
         return data
     }
