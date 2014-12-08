@@ -28,6 +28,16 @@
 import Darwin
 import Foundation
 
+// Via <mach/machine.h>
+
+let CPU_TYPE_X86       : cpu_type_t = 7
+let CPU_TYPE_I386      : cpu_type_t = CPU_TYPE_X86
+let CPU_TYPE_X86_64    : cpu_type_t = CPU_TYPE_X86 | CPU_ARCH_ABI64
+let CPU_TYPE_ARM       : cpu_type_t = 12
+let CPU_TYPE_ARM64     : cpu_type_t = CPU_TYPE_ARM | CPU_ARCH_ABI64
+let CPU_TYPE_POWERPC   : cpu_type_t = 18
+let CPU_TYPE_POWERPC64 : cpu_type_t = CPU_TYPE_POWERPC | CPU_ARCH_ABI64
+
 
 struct libtop_i64_t {
     var accumulator : UInt64 = 0
@@ -441,6 +451,18 @@ File Cache: The space being used to temporarily store files that are not current
     //--------------------------------------------------------------------------
     // MARK: PRIVATE METHODS
     //--------------------------------------------------------------------------
+    
+    
+    // Assuming x86 for now
+    
+    public func isProcforeign(procCPUType: cpu_type_t) -> Bool {
+        return procCPUType == CPU_TYPE_X86_64 || procCPUType == CPU_TYPE_X86
+    }
+    
+    
+    public class func isProc64Bit(procCPUType: cpu_type_t) -> Bool {
+        return procCPUType == CPU_TYPE_X86_64
+    }
     
     
     /**
