@@ -686,7 +686,7 @@ File Cache: The space being used to temporarily store files that are not current
             
             result = pid_for_task(process, &pid)
             
-            if (pid != 15496) {
+            if (pid != 20849) {
                 continue
             }
             
@@ -831,6 +831,7 @@ File Cache: The space being used to temporarily store files that are not current
         println("PORT COUNT: \(ncnt)")
 
         // http://web.mit.edu/darwin/src/modules/xnu/osfmk/man/vm_deallocate.html
+        // sizeof(*names) = 4
         var address: mach_vm_address_t = UnsafePointer<mach_vm_address_t>(names).memory
         result = mach_vm_deallocate(mach_task_self_, address, UInt64(ncnt) * UInt64(sizeof(mach_port_name_t)))
         

@@ -6,16 +6,12 @@
 int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk)
 {
     struct kinfo_proc kinfo;
-    size_t miblen = 4, len;
-    int mib[miblen];
-    int res;
+    size_t len = sizeof(struct kinfo_proc);
+
+    int mib[]    = {CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
+    u_int miblen = 4;
     
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROC;
-    mib[2] = KERN_PROC_PID;
-    mib[3] = pid;
-    len = sizeof(struct kinfo_proc);
-    res = sysctl(mib, 4, &kinfo, &len, NULL, 0);
+    int res = sysctl(mib, miblen, &kinfo, &len, NULL, 0);
     if (res != 0) {
         printf("ERROR");
         return -1;
