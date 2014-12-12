@@ -28,6 +28,19 @@
 import IOKit
 import Foundation
 
+//------------------------------------------------------------------------------
+// MARK: GLOBAL PRIVATE PROPERTIES
+//------------------------------------------------------------------------------
+
+
+/**
+Name of the battery IOService as seen in the IORegistry. You can view it either
+via command line with ioreg or through the IORegistryExplorer app (found on
+Apple's developer site - Hardware IO Tools for Xcode)
+*/
+private let IOSERVICE_BATTERY = "AppleSmartBattery"
+
+
 /**
 API to read stats from the battery. Only applicable to laptops (MacBooks).
 */
@@ -42,7 +55,7 @@ public class Battery {
     /**
     Temperature units.
     */
-    public enum TMP_Unit {
+    public enum TemperatureUnit {
         case Celsius
         case Fahrenheit
         case Kelvin
@@ -68,91 +81,12 @@ public class Battery {
     }
     
     
-    /**
-    I/O Kit Error Codes - as defined in IOReturn.h
-    
-    Swift can't import complex macros, thus we have to manually add them here.
-    Most of these are not relevant to us, but for the sake of completeness.
-    
-    See "Accessing Hardware From Applications -> Handling Errors" Apple doc for
-    more information.
-    */
-    private enum IOReturn : kern_return_t {
-        case kIOReturnSuccess          = 0      // KERN_SUCCESS - OK
-        case kIOReturnError            = 0x2bc  // General error
-        case kIOReturnNoMemory         = 0x2bd  // Can't allocate memory
-        case kIOReturnNoResources      = 0x2be  // Resource shortage
-        case kIOReturnIPCError         = 0x2bf  // Error during IPC
-        case kIOReturnNoDevice         = 0x2c0  // No such device
-        case kIOReturnNotPrivileged    = 0x2c1  // Privilege violation
-        case kIOReturnBadArgument      = 0x2c2  // Invalid argument
-        case kIOReturnLockedRead       = 0x2c3  // Device read locked
-        case kIOReturnExclusiveAccess  = 0x2c5  // Exclusive access and device
-                                                // already open
-        case kIOReturnBadMessageID     = 0x2c6  // Sent/received messages had
-                                                // different msg_id
-        case kIOReturnUnsupported      = 0x2c7  // Unsupported function
-        case kIOReturnVMError          = 0x2c8  // Misc. VM failure
-        case kIOReturnInternalError    = 0x2c9  // Internal error
-        case kIOReturnIOError          = 0x2ca  // General I/O error
-        case kIOReturnQM1Error         = 0x2cb  // ??? - kIOReturn???Error
-        case kIOReturnCannotLock       = 0x2cc  // Can't acquire lock
-        case kIOReturnNotOpen          = 0x2cd  // Device not open
-        case kIOReturnNotReadable      = 0x2ce  // Read not supported
-        case kIOReturnNotWritable      = 0x2cf  // Write not supported
-        case kIOReturnNotAligned       = 0x2d0  // Alignment error
-        case kIOReturnBadMedia         = 0x2d1  // Media Error
-        case kIOReturnStillOpen        = 0x2d2  // Device(s) still open
-        case kIOReturnRLDError         = 0x2d3  // RLD failure
-        case kIOReturnDMAError         = 0x2d4  // DMA failure
-        case kIOReturnBusy             = 0x2d5  // Device Busy
-        case kIOReturnTimeout          = 0x2d6  // I/O Timeout
-        case kIOReturnOffline          = 0x2d7  // Device offline
-        case kIOReturnNotReady         = 0x2d8  // Not ready
-        case kIOReturnNotAttached      = 0x2d9  // Device not attached
-        case kIOReturnNoChannels       = 0x2da  // No DMA channels left
-        case kIOReturnNoSpace          = 0x2db  // No space for data
-        case kIOReturnQM2Error         = 0x2dc  // ??? - kIOReturn???Error
-        case kIOReturnPortExists       = 0x2dd  // Port already exists
-        case kIOReturnCannotWire       = 0x2de  // Can't wire down physical
-                                                // memory
-        case kIOReturnNoInterrupt      = 0x2df  // No interrupt attached
-        case kIOReturnNoFrames         = 0x2e0  // No DMA frames enqueued
-        case kIOReturnMessageTooLarge  = 0x2e1  // Oversized msg received on
-                                                // interrupt port
-        case kIOReturnNotPermitted     = 0x2e2  // Not permitted
-        case kIOReturnNoPower          = 0x2e3  // No power to device
-        case kIOReturnNoMedia          = 0x2e4  // Media not present
-        case kIOReturnUnformattedMedia = 0x2e5  // media not formatted
-        case kIOReturnUnsupportedMode  = 0x2e6  // No such mode
-        case kIOReturnUnderrun         = 0x2e7  // Data underrun
-        case kIOReturnOverrun          = 0x2e8  // Data overrun
-        case kIOReturnDeviceError      = 0x2e9  // The device is not working
-                                                // properly!
-        case kIOReturnNoCompletion     = 0x2ea  // A completion routine is
-                                                // required
-        case kIOReturnAborted          = 0x2eb  // Operation aborted
-        case kIOReturnNoBandwidth      = 0x2ec  // Bus bandwidth would be
-                                                // exceeded
-        case kIOReturnNotResponding    = 0x2ed  // Device not responding
-        case kIOReturnIsoTooOld        = 0x2ee  // Isochronous I/O request for
-                                                // distant past!
-        case kIOReturnIsoTooNew        = 0x2ef  // Isochronous I/O request for
-                                                // distant future
-        case kIOReturnNotFound         = 0x2f0  // Data was not found
-        case kIOReturnInvalid          = 0x1    // Should never be seen
-    }
-    
-    
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTIES
     //--------------------------------------------------------------------------
     
     
-    private let IOSERVICE_BATTERY = "AppleSmartBattery"
-    
-    
-    private var service : io_service_t = 0
+    private var service: io_service_t = 0
     
     
     //--------------------------------------------------------------------------
@@ -176,7 +110,7 @@ public class Battery {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) -"
                         + " \(IOSERVICE_BATTERY) service not found")
             #endif
-            return IOReturn.kIOReturnNotFound.rawValue
+            return kIOReturnNotFound
         }
         
         return kIOReturnSuccess
@@ -294,7 +228,7 @@ public class Battery {
     
     :returns: True if it is, false otherwise.
     */
-    public func isLaptop() -> Bool {
+    public class func isLaptop() -> Bool {
       // If the AppleSmartBattery is in the I/O Registry, then it's a laptop
       let exist = IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
 
@@ -321,7 +255,7 @@ public class Battery {
     /**
     Get the current temperature of the battery.
     */
-    public func tmp(unit : TMP_Unit = .Celsius) -> Double {
+    public func tmp(unit: TemperatureUnit = .Celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.Temperature.rawValue,
                                                    kCFAllocatorDefault,
@@ -353,7 +287,7 @@ public class Battery {
     Celsius to Fahrenheit
     */
     private class func toFahrenheit(tmp : Double) -> Double {
-        // http://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
+        // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
         return (tmp * 1.8) + 32
     }
     
@@ -362,9 +296,7 @@ public class Battery {
     Celsius to Kelvin
     */
     private class func toKelvin(tmp : Double) -> Double {
-        // http://en.wikipedia.org/wiki/Kelvin
+        // https://en.wikipedia.org/wiki/Kelvin
         return tmp + 273.15
     }
 }
-
-

@@ -15,6 +15,8 @@
 		4C543D2F1A08396700C5D9B2 /* SystemKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D2E1A08396700C5D9B2 /* SystemKitTests.swift */; };
 		4C543D391A08398500C5D9B2 /* System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D381A08398500C5D9B2 /* System.swift */; };
 		4C543D3B1A08399100C5D9B2 /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D3A1A08399100C5D9B2 /* Battery.swift */; };
+		4C6D98B81A3A8FF500BA2B36 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */; };
+		4C6D98B91A3A905E00BA2B36 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */; };
 		4C8004A31A23B53C00D57D90 /* kinfo_proc-bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C8004A11A23B53C00D57D90 /* kinfo_proc-bridge.c */; };
 		4C8004A41A23B53C00D57D90 /* kinfo_proc-bridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C8004A21A23B53C00D57D90 /* kinfo_proc-bridge.h */; };
 		4C8004A51A23B58900D57D90 /* kinfo_proc-bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C8004A11A23B53C00D57D90 /* kinfo_proc-bridge.c */; };
@@ -53,6 +55,7 @@
 		4C543D2E1A08396700C5D9B2 /* SystemKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemKitTests.swift; sourceTree = "<group>"; };
 		4C543D381A08398500C5D9B2 /* System.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = System.swift; sourceTree = "<group>"; };
 		4C543D3A1A08399100C5D9B2 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
+		4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOReturn.swift; sourceTree = "<group>"; };
 		4C8004A11A23B53C00D57D90 /* kinfo_proc-bridge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "kinfo_proc-bridge.c"; sourceTree = "<group>"; };
 		4C8004A21A23B53C00D57D90 /* kinfo_proc-bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "kinfo_proc-bridge.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -116,6 +119,7 @@
 			children = (
 				4C543D3A1A08399100C5D9B2 /* Battery.swift */,
 				4C543D381A08398500C5D9B2 /* System.swift */,
+				4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */,
 				4C8004A11A23B53C00D57D90 /* kinfo_proc-bridge.c */,
 				4C8004A21A23B53C00D57D90 /* kinfo_proc-bridge.h */,
 				4C543D211A08396700C5D9B2 /* SystemKit.h */,
@@ -278,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C6D98B91A3A905E00BA2B36 /* IOReturn.swift in Sources */,
 				4C8004A51A23B58900D57D90 /* kinfo_proc-bridge.c in Sources */,
 				4C4BE60E1A083A760085170A /* System.swift in Sources */,
 				4C4BE60F1A083A760085170A /* Battery.swift in Sources */,
@@ -290,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C543D391A08398500C5D9B2 /* System.swift in Sources */,
+				4C6D98B81A3A8FF500BA2B36 /* IOReturn.swift in Sources */,
 				4C8004A31A23B53C00D57D90 /* kinfo_proc-bridge.c in Sources */,
 				4C543D3B1A08399100C5D9B2 /* Battery.swift in Sources */,
 			);
