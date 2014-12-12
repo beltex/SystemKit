@@ -90,13 +90,30 @@ public class Battery {
     
     
     //--------------------------------------------------------------------------
+    // MARK: PUBLIC TYPE METHODS
+    //--------------------------------------------------------------------------
+    
+    
+    /**
+    Does this machine have a battery?
+    
+    :returns: True if it is, false otherwise.
+    */
+    public class func hasBattery() -> Bool {
+        let exist = IOServiceNameMatching(IOSERVICE_BATTERY)
+                                                          .takeUnretainedValue()
+        
+        return exist == 0 ? false : true
+    }
+    
+    
+    //--------------------------------------------------------------------------
     // MARK: PUBLIC METHODS
     //--------------------------------------------------------------------------
     
     
     /**
-    Open a connection to the battery. If this method fails, it may be because
-    the machine is not a laptop. See isLaptop().
+    Open a connection to the battery.
     
     :returns: kIOReturnSuccess on successful connection to the battery.
     */
@@ -127,10 +144,6 @@ public class Battery {
         return IOObjectRelease(service)
     }
     
-    
-    //--------------------------------------------------------------------------
-    // MARK: PUBLIC METHODS - BATTERY
-    //--------------------------------------------------------------------------
     
     /**
     Get the current capacity of the battery.
@@ -224,19 +237,6 @@ public class Battery {
     
     
     /**
-    Is this machine a laptop? By that we simply mean, does it have a battery?
-    
-    :returns: True if it is, false otherwise.
-    */
-    public class func isLaptop() -> Bool {
-      // If the AppleSmartBattery is in the I/O Registry, then it's a laptop
-      let exist = IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
-
-      return exist == 0 ? false : true
-    }
-    
-    
-    /**
     What is the current health of the battery? This is a measure of how much the
     batteries capacity has dimished from the original. Thus, health =
     
@@ -250,53 +250,54 @@ public class Battery {
                      * 100.0)
     }
     
-    
 
     /**
     Get the current temperature of the battery.
+    
+    :returns: Battery temperature. By default in Celsius.
     */
-    public func tmp(unit: TemperatureUnit = .Celsius) -> Double {
+    public func temperature(unit: TemperatureUnit = .Celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.Temperature.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
         
-        var tmp = prop.takeUnretainedValue() as Double / 100.0
+        var temperature = prop.takeUnretainedValue() as Double / 100.0
         
         switch unit {
             case .Celsius:
                 // Do nothing - in Celsius by default
                 // Must have complete switch though with executed command
-                tmp = tmp + 0.0
+                break
             case .Fahrenheit:
-                tmp = Battery.toFahrenheit(tmp)
+                temperature = Battery.toFahrenheit(temperature)
             case .Kelvin:
-                tmp = Battery.toKelvin(tmp)
+                temperature = Battery.toKelvin(temperature)
         }
         
-        return tmp
+        return temperature
     }
     
     
     //--------------------------------------------------------------------------
-    // MARK: PRIVATE METHODS - HELPERS
+    // MARK: PRIVATE HELPERS
     //--------------------------------------------------------------------------
     
     
     /**
     Celsius to Fahrenheit
     */
-    private class func toFahrenheit(tmp : Double) -> Double {
+    private class func toFahrenheit(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
-        return (tmp * 1.8) + 32
+        return (temperature * 1.8) + 32
     }
     
     
     /**
     Celsius to Kelvin
     */
-    private class func toKelvin(tmp : Double) -> Double {
+    private class func toKelvin(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Kelvin
-        return tmp + 273.15
+        return temperature + 273.15
     }
 }
