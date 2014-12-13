@@ -28,16 +28,38 @@
 import Darwin
 import Foundation
 
-// Via <mach/machine.h>
-// TODO: Public or private? Depends if we decide to return cpu_type to user
+//------------------------------------------------------------------------------
+// MARK: GLOBAL PUBLIC PROPERTIES
+//------------------------------------------------------------------------------
 
-let CPU_TYPE_X86       : cpu_type_t = 7
-let CPU_TYPE_I386      : cpu_type_t = CPU_TYPE_X86
-let CPU_TYPE_X86_64    : cpu_type_t = CPU_TYPE_X86 | CPU_ARCH_ABI64
-let CPU_TYPE_ARM       : cpu_type_t = 12
-let CPU_TYPE_ARM64     : cpu_type_t = CPU_TYPE_ARM | CPU_ARCH_ABI64
-let CPU_TYPE_POWERPC   : cpu_type_t = 18
-let CPU_TYPE_POWERPC64 : cpu_type_t = CPU_TYPE_POWERPC | CPU_ARCH_ABI64
+
+// As defined in <mach/machine.h>
+
+public let CPU_TYPE_X86       : cpu_type_t = 7
+public let CPU_TYPE_I386      : cpu_type_t = CPU_TYPE_X86
+public let CPU_TYPE_X86_64    : cpu_type_t = CPU_TYPE_X86 | CPU_ARCH_ABI64
+public let CPU_TYPE_ARM       : cpu_type_t = 12
+public let CPU_TYPE_ARM64     : cpu_type_t = CPU_TYPE_ARM | CPU_ARCH_ABI64
+public let CPU_TYPE_POWERPC   : cpu_type_t = 18
+public let CPU_TYPE_POWERPC64 : cpu_type_t = CPU_TYPE_POWERPC | CPU_ARCH_ABI64
+
+
+/**
+System page size.
+
+- Can check this via pagesize shell command as well
+- C lib function getpagesize()
+- host_page_size()
+
+- This page size var was added starting 10.9/iOS 7, same as Swift's
+aval, thus we can use it
+*/
+public let PAGE_SIZE = vm_kernel_page_size
+
+
+//------------------------------------------------------------------------------
+// MARK: GLOBAL PUBLIC STRUCTS
+//------------------------------------------------------------------------------
 
 
 struct libtop_i64_t {
@@ -45,12 +67,14 @@ struct libtop_i64_t {
     var last_value  : Int    = 0
 }
 
+
 struct libtop_i64_values_t {
     var i64               = libtop_i64_t()
     var now      : UInt64 = 0
     var began    : UInt64 = 0
     var previous : UInt64 = 0
 }
+
 
 /*
 * Process sample information.
@@ -177,6 +201,44 @@ struct libtop_psamp_s {
 }
 
 
+//------------------------------------------------------------------------------
+// MARK: GLOBAL PRIVATE PROPERTIES
+//------------------------------------------------------------------------------
+
+
+// As defined in <mach/tash_info.h>
+
+private let HOST_BASIC_INFO_COUNT         : mach_msg_type_number_t =
+                      UInt32(sizeof(host_basic_info_data_t) / sizeof(integer_t))
+private let HOST_LOAD_INFO_COUNT          : mach_msg_type_number_t =
+                       UInt32(sizeof(host_load_info_data_t) / sizeof(integer_t))
+private let HOST_CPU_LOAD_INFO_COUNT      : mach_msg_type_number_t =
+                   UInt32(sizeof(host_cpu_load_info_data_t) / sizeof(integer_t))
+private let HOST_VM_INFO_COUNT            : mach_msg_type_number_t =
+                        UInt32(sizeof(vm_statistics_data_t) / sizeof(integer_t))
+private let HOST_VM_INFO64_COUNT          : mach_msg_type_number_t =
+                      UInt32(sizeof(vm_statistics64_data_t) / sizeof(integer_t))
+private let HOST_SCHED_INFO_COUNT         : mach_msg_type_number_t =
+                      UInt32(sizeof(host_sched_info_data_t) / sizeof(integer_t))
+private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
+              UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
+private let TASK_BASIC_INFO_64_COUNT      : mach_msg_type_number_t =
+                   UInt32(sizeof(task_basic_info_64_data_t) / sizeof(natural_t))
+private let TASK_EVENTS_INFO_COUNT		  : mach_msg_type_number_t =
+                     UInt32(sizeof(task_events_info_data_t) / sizeof(natural_t))
+private let TASK_KERNELMEMORY_INFO_COUNT  : mach_msg_type_number_t =
+               UInt32(sizeof(task_kernelmemory_info_data_t) / sizeof(natural_t))
+private let TASK_POWER_INFO_COUNT         : mach_msg_type_number_t =
+                      UInt32(sizeof(task_power_info_data_t) / sizeof(natural_t))
+private let TASK_POWER_INFO_V2_COUNT	  : mach_msg_type_number_t =
+                   UInt32(sizeof(task_power_info_v2_data_t) / sizeof(natural_t))
+private let TASK_VM_INFO_COUNT            : mach_msg_type_number_t =
+                         UInt32(sizeof(task_vm_info_data_t) / sizeof(natural_t))
+private let THREAD_BASIC_INFO_COUNT       : mach_msg_type_number_t =
+                    UInt32(sizeof(thread_basic_info_data_t) / sizeof(natural_t))
+
+
+
 /**
 CPU, Memory, Load, Task, Thread.
 */
@@ -184,58 +246,8 @@ public class System {
     
     
     //--------------------------------------------------------------------------
-    // MARK: PUBLIC PROPERTIES
-    //--------------------------------------------------------------------------
-    
-    
-    /**
-    System page size.
-    
-    - Can check this via pagesize shell command as well
-    - C lib function getpagesize()
-    - host_page_size()
-    
-    - This page size var was added starting 10.9/iOS 7, same as Swift's
-      aval, thus we can use it
-    */
-    public let PAGE_SIZE = vm_kernel_page_size
-
-    
-    //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTIES
     //--------------------------------------------------------------------------
-    
-    
-    // Swift can't handle complex macros, thus we import these manually
-    
-    private let HOST_BASIC_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_basic_info_data_t) / sizeof(integer_t))
-    private let HOST_LOAD_INFO_COUNT          : mach_msg_type_number_t =
-                       UInt32(sizeof(host_load_info_data_t) / sizeof(integer_t))
-    private let HOST_CPU_LOAD_INFO_COUNT      : mach_msg_type_number_t =
-                   UInt32(sizeof(host_cpu_load_info_data_t) / sizeof(integer_t))
-    private let HOST_VM_INFO_COUNT            : mach_msg_type_number_t =
-                        UInt32(sizeof(vm_statistics_data_t) / sizeof(integer_t))
-    private let HOST_VM_INFO64_COUNT          : mach_msg_type_number_t =
-                      UInt32(sizeof(vm_statistics64_data_t) / sizeof(integer_t))
-    private let HOST_SCHED_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_sched_info_data_t) / sizeof(integer_t))
-    private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
-              UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
-    private let TASK_BASIC_INFO_64_COUNT      : mach_msg_type_number_t =
-                   UInt32(sizeof(task_basic_info_64_data_t) / sizeof(natural_t))
-    private let TASK_EVENTS_INFO_COUNT		  : mach_msg_type_number_t =
-                     UInt32(sizeof(task_events_info_data_t) / sizeof(natural_t))
-    private let TASK_KERNELMEMORY_INFO_COUNT  : mach_msg_type_number_t =
-               UInt32(sizeof(task_kernelmemory_info_data_t) / sizeof(natural_t))
-    private let TASK_POWER_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(task_power_info_data_t) / sizeof(natural_t))
-    private let TASK_POWER_INFO_V2_COUNT	  : mach_msg_type_number_t =
-                   UInt32(sizeof(task_power_info_v2_data_t) / sizeof(natural_t))
-    private let TASK_VM_INFO_COUNT            : mach_msg_type_number_t =
-                         UInt32(sizeof(task_vm_info_data_t) / sizeof(natural_t))
-    private let THREAD_BASIC_INFO_COUNT       : mach_msg_type_number_t =
-                    UInt32(sizeof(thread_basic_info_data_t) / sizeof(natural_t))
     
     
     /**
