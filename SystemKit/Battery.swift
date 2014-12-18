@@ -1,29 +1,29 @@
 /*
-* Battery.swift
-* SystemKit
-*
-* The MIT License (MIT)
-*
-* Copyright (C) 2014  beltex <https://github.com/beltex>
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*/
+ * Battery.swift
+ * SystemKit
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (C) 2014  beltex <https://github.com/beltex>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 import IOKit
 import Foundation
@@ -41,9 +41,8 @@ Apple's developer site - Hardware IO Tools for Xcode)
 private let IOSERVICE_BATTERY = "AppleSmartBattery"
 
 
-/**
-API to read stats from the battery. Only applicable to laptops (MacBooks).
-*/
+
+/// API to read stats from the battery. Only applicable to laptops (MacBooks).
 public class Battery {
 
     
@@ -52,9 +51,7 @@ public class Battery {
     //--------------------------------------------------------------------------
     
     
-    /**
-    Temperature units.
-    */
+    /// Temperature units
     public enum TemperatureUnit {
         case Celsius
         case Fahrenheit
@@ -71,13 +68,19 @@ public class Battery {
     Battery property names (keys).
     */
     private enum Key : String {
+        case ACPowered        = "ExternalConnected"
+        case Amperage         = "Amperage"
+        /// Current charge
         case CurrentCapacity  = "CurrentCapacity"
         case CycleCount       = "CycleCount"
         case DesignCapacity   = "DesignCapacity"
         case DesignCycleCount = "DesignCycleCount9C"
         case FullyCharged     = "FullyCharged"
         case IsCharging       = "IsCharging"
+        /// Current max charge (this degrades over time)
+        case MaxCapactiy      = "MaxCapactiy"
         case Temperature      = "Temperature"
+        case TimeRemaining    = "TimeRemaining"
     }
     
     
@@ -97,9 +100,11 @@ public class Battery {
     /**
     Does this machine have a battery?
     
-    :returns: True if it is, false otherwise.
+    :returns: True if it does, false otherwise.
     */
     public class func hasBattery() -> Bool {
+        // TODO: Confirm that this is the best way to do this check. Apple's
+        //       PowerManagement project probably has something that could help.
         let exist = IOServiceNameMatching(IOSERVICE_BATTERY)
                                                           .takeUnretainedValue()
         
@@ -233,6 +238,14 @@ public class Battery {
                                                    UInt32(kNilOptions))
         
         return prop.takeUnretainedValue() as Int == 1 ? true : false
+    }
+    
+    
+    /**
+    What is the current charge of the machine?
+    */
+    public func charge() -> Double {
+        return 100.0
     }
     
     
