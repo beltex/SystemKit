@@ -40,7 +40,6 @@ Apple's developer site - Hardware IO Tools for Xcode)
 private let IOSERVICE_BATTERY = "AppleSmartBattery"
 
 
-
 /// API to read stats from the battery. Only applicable to laptops (MacBooks).
 public class Battery {
 
@@ -207,6 +206,19 @@ public class Battery {
     }
     
     
+    /**
+    Is the machine powered by AC?
+    
+    :returns: True if it is, false otherwise.
+    */
+    public func isACPowered() -> Bool {
+        let prop = IORegistryEntryCreateCFProperty(service,
+                                                   Key.ACPowered.rawValue,
+                                                   kCFAllocatorDefault,
+                                                   UInt32(kNilOptions))
+        return prop.takeUnretainedValue() as Bool
+    }
+    
     
     /**
     Is the battery charging?
@@ -219,7 +231,7 @@ public class Battery {
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
         
-        return prop.takeUnretainedValue() as Int == 1 ? true : false
+        return prop.takeUnretainedValue() as Bool
     }
     
     
@@ -234,7 +246,7 @@ public class Battery {
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
         
-        return prop.takeUnretainedValue() as Int == 1 ? true : false
+        return prop.takeUnretainedValue() as Bool
     }
     
     
@@ -264,7 +276,7 @@ public class Battery {
     /**
     Get the current temperature of the battery.
     
-    :returns: Battery temperature. By default in Celsius.
+    :returns: Battery temperature, by default in Celsius.
     */
     public func temperature(unit: TemperatureUnit = .Celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
@@ -296,6 +308,9 @@ public class Battery {
     
     /**
     Celsius to Fahrenheit
+    
+    :param: temperature Temperature in Celsius
+    :returns: Temperature in Fahrenheit
     */
     private class func toFahrenheit(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
@@ -305,6 +320,9 @@ public class Battery {
     
     /**
     Celsius to Kelvin
+    
+    :param: temperature Temperature in Celsius
+    :returns: Temperature in Kelvin
     */
     private class func toKelvin(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Kelvin
