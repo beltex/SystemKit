@@ -74,7 +74,7 @@ public class Battery {
         case FullyCharged     = "FullyCharged"
         case IsCharging       = "IsCharging"
         /// Current max charge (this degrades over time)
-        case MaxCapactiy      = "MaxCapactiy"
+        case MaxCapacity      = "MaxCapacity"
         case Temperature      = "Temperature"
         case TimeRemaining    = "TimeRemaining"
     }
@@ -106,6 +106,14 @@ public class Battery {
         
         return exist == 0 ? false : true
     }
+    
+    
+    //--------------------------------------------------------------------------
+    // MARK: PUBLIC INITIALIZERS
+    //--------------------------------------------------------------------------
+    
+    
+    public init() { }
     
     
     //--------------------------------------------------------------------------
@@ -156,6 +164,15 @@ public class Battery {
     public func currentCapacity() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.CurrentCapacity.rawValue,
+                                                   kCFAllocatorDefault,
+                                                   UInt32(kNilOptions))
+        return prop.takeUnretainedValue() as Int
+    }
+    
+    
+    public func maxCapactiy() -> Int {
+        let prop = IORegistryEntryCreateCFProperty(service,
+                                                   Key.MaxCapacity.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
         return prop.takeUnretainedValue() as Int
@@ -254,7 +271,18 @@ public class Battery {
     What is the current charge of the machine?
     */
     public func charge() -> Double {
-        return 100.0
+        return Double(currentCapacity()) / Double(maxCapactiy()) * 100.0
+    }
+    
+    
+    public func timeRemaining() -> Double {
+        // TODO: Time format return?
+        let prop = IORegistryEntryCreateCFProperty(service,
+                                                   Key.TimeRemaining.rawValue,
+                                                   kCFAllocatorDefault,
+                                                   UInt32(kNilOptions))
+        
+        return prop.takeUnretainedValue() as Double
     }
     
     

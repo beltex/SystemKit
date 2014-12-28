@@ -1,5 +1,5 @@
 /*
-* SystemKit.h
+* SystemKitTests.swift
 * SystemKit
 *
 * The MIT License (MIT)
@@ -27,6 +27,7 @@
 
 import Cocoa
 import XCTest
+import SystemKit
 
 class SystemKitTests: XCTestCase {
     
@@ -42,9 +43,17 @@ class SystemKitTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
+    func testBattery() {
+        if !Battery.hasBattery() {
+            return
+        }
+        
+        var battery = Battery()
+        assert(battery.open() == kIOReturnSuccess)
+        
+        //XCTAssertTrue((battery.isCharging() && battery.isACPowered()))
+        
+        battery.close()
     }
     
     func testPerformanceExample() {
