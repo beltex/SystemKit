@@ -27,22 +27,13 @@
 import IOKit
 import Foundation
 
-//------------------------------------------------------------------------------
-// MARK: GLOBAL PRIVATE PROPERTIES
-//------------------------------------------------------------------------------
-
-
 /**
-Name of the battery IOService as seen in the IORegistry. You can view it either
-via command line with ioreg or through the IORegistryExplorer app (found on
-Apple's developer site - Hardware IO Tools for Xcode)
+API to read stats from the battery. Only applicable to laptops (MacBooks).
+OS X only in other words.
+
+TODO: None of this will work on iOS as I/O Kit is a private framework there
 */
-private let IOSERVICE_BATTERY = "AppleSmartBattery"
-
-
-/// API to read stats from the battery. Only applicable to laptops (MacBooks).
-public class Battery {
-
+public struct Battery {
     
     //--------------------------------------------------------------------------
     // MARK: PUBLIC ENUMS
@@ -63,7 +54,7 @@ public class Battery {
     
     
     /// Battery property names (keys)
-    private enum Key : String {
+    private enum Key: String {
         case ACPowered        = "ExternalConnected"
         case Amperage         = "Amperage"
         /// Current charge
@@ -85,6 +76,10 @@ public class Battery {
     //--------------------------------------------------------------------------
     
     
+    /// Name of the battery IOService as seen in the IORegistry
+    private static let IOSERVICE_BATTERY = "AppleSmartBattery"
+    
+    
     private var service: io_service_t = 0
     
     
@@ -98,11 +93,11 @@ public class Battery {
     
     :returns: True if it does, false otherwise.
     */
-    public class func hasBattery() -> Bool {
+    public static func hasBattery() -> Bool {
         // TODO: Confirm that this is the best way to do this check. Apple's
         //       PowerManagement project probably has something that could help.
-        let exist = IOServiceNameMatching(IOSERVICE_BATTERY)
-                                                          .takeUnretainedValue()
+        let exist =
+                  IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
         
         return exist == 0 ? false : true
     }
@@ -124,12 +119,12 @@ public class Battery {
     /**
     Open a connection to the battery.
     
-    :returns: kIOReturnSuccess on successful connection to the battery.
+    :returns: kIOReturnSuccess on success.
     */
-    public func open() -> kern_return_t {
+    public mutating func open() -> kern_return_t {
         // TODO: Could there be more than one service? serveral batteries?
         service = IOServiceGetMatchingService(kIOMasterPortDefault,
-                 IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue())
+         IOServiceNameMatching(Battery.IOSERVICE_BATTERY).takeUnretainedValue())
         
         if (service == 0) {
             #if DEBUG
@@ -146,8 +141,7 @@ public class Battery {
     /**
     Close the connection to the battery.
     
-    :returns: kIOReturnSuccess on successful close of the connection to the
-              battery.
+    :returns: kIOReturnSuccess on success.
     */
     public func close() -> kern_return_t {
         return IOObjectRelease(service)
@@ -337,7 +331,7 @@ public class Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Fahrenheit
     */
-    private class func toFahrenheit(temperature: Double) -> Double {
+    private static func toFahrenheit(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
         return (temperature * 1.8) + 32
     }
@@ -349,7 +343,7 @@ public class Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Kelvin
     */
-    private class func toKelvin(temperature: Double) -> Double {
+    private static func toKelvin(temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Kelvin
         return temperature + 273.15
     }
