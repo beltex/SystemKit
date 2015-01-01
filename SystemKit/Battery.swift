@@ -247,7 +247,6 @@ public class Battery {
                                                    Key.IsCharging.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
-        
         return prop.takeUnretainedValue() as Bool
     }
     
@@ -262,7 +261,6 @@ public class Battery {
                                                    Key.FullyCharged.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
-        
         return prop.takeUnretainedValue() as Bool
     }
     
@@ -271,7 +269,7 @@ public class Battery {
     What is the current charge of the machine?
     */
     public func charge() -> Double {
-        return Double(currentCapacity()) / Double(maxCapactiy()) * 100.0
+        return floor(Double(currentCapacity()) / Double(maxCapactiy()) * 100.0)
     }
     
     
@@ -281,7 +279,6 @@ public class Battery {
                                                    Key.TimeRemaining.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
-        
         return prop.takeUnretainedValue() as Double
     }
     
@@ -295,8 +292,8 @@ public class Battery {
     :returns:
     */
     public func health() -> Double {
-        // TODO: Decimal places
-        return ceil((Double(currentCapacity()) / Double(designCapacity()))
+        // TODO: Do we really need this stat?
+        return floor((Double(currentCapacity()) / Double(designCapacity()))
                      * 100.0)
     }
     
@@ -325,7 +322,7 @@ public class Battery {
                 temperature = Battery.toKelvin(temperature)
         }
         
-        return temperature
+        return ceil(temperature)
     }
     
     
