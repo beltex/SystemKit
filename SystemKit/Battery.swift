@@ -84,26 +84,6 @@ public struct Battery {
     
     
     //--------------------------------------------------------------------------
-    // MARK: PUBLIC TYPE METHODS
-    //--------------------------------------------------------------------------
-    
-    
-    /**
-    Does this machine have a battery?
-    
-    :returns: True if it does, false otherwise.
-    */
-    public static func hasBattery() -> Bool {
-        // TODO: Confirm that this is the best way to do this check. Apple's
-        //       PowerManagement project probably has something that could help.
-        let exist =
-                  IOServiceNameMatching(IOSERVICE_BATTERY).takeUnretainedValue()
-        
-        return exist == 0 ? false : true
-    }
-    
-    
-    //--------------------------------------------------------------------------
     // MARK: PUBLIC INITIALIZERS
     //--------------------------------------------------------------------------
     
