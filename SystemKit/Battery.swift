@@ -255,23 +255,8 @@ public struct Battery {
                                                    UInt32(kNilOptions))
         return prop.takeUnretainedValue() as Double
     }
-    
-    
-    /**
-    What is the current health of the battery? This is a measure of how much the
-    batteries capacity has dimished from the original. Thus, health =
-    
-        current capacity / design capacity
-    
-    :returns:
-    */
-    public func health() -> Double {
-        // TODO: Do we really need this stat?
-        return floor((Double(currentCapacity()) / Double(designCapacity()))
-                     * 100.0)
-    }
-    
 
+    
     /**
     Get the current temperature of the battery.
     
