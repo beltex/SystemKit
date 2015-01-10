@@ -2,7 +2,7 @@
 // SystemKit.h
 // SystemKit
 //
-// The MIT License (MIT)
+// The MIT License
 //
 // Copyright (C) 2014  beltex <https://github.com/beltex>
 //

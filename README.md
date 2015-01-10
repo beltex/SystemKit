@@ -1,14 +1,21 @@
 SystemKit
 =========
 
-- Example usage of lib - [dshb](https://github.com/beltex/dshb)
-- For OS X folks, see also - [SMCKit](https://github.com/beltex/SMCKit)
+An OS X system library in Swift based off of
+[libtop](http://www.opensource.apple.com/source/top/top-100.1.2/libtop.c), from
+Apple's top implementation.
 
-### Refs
+For an example usage of this library, see
+[dshb](https://github.com/beltex/dshb), an OS X system monitor in Swift. Also,
+for OS X folks, for more system related statistics, see
+[SMCKit](https://github.com/beltex/SMCKit), an Apple SMC library in Swift.
 
-- vm_stat
-- hostinfo
-- top
+
+### References
+
+- [top](http://www.opensource.apple.com/source/top/)
+- [hostinfo](http://www.opensource.apple.com/source/system_cmds/)
+- [vm_stat](http://www.opensource.apple.com/source/system_cmds/)
 - iStat Pro
 
 
