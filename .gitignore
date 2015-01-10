@@ -1,8 +1,5 @@
 # Swift.gitignore @ https://github.com/github/gitignore
 
-# SystemKit - temp for testing
-main.swift
-
 # Xcode
 build/
 *.pbxuser

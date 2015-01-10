@@ -30,6 +30,13 @@
 			remoteGlobalIDString = 4C543D1B1A08396700C5D9B2;
 			remoteInfo = SystemKit;
 		};
+		4CCA63541A61023800EBEC7D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C543D131A08396700C5D9B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C543D1B1A08396700C5D9B2;
+			remoteInfo = SystemKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -179,6 +186,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4CCA63551A61023800EBEC7D /* PBXTargetDependency */,
 			);
 			name = Example;
 			productName = Example;
@@ -317,6 +325,11 @@
 			target = 4C543D1B1A08396700C5D9B2 /* SystemKit */;
 			targetProxy = 4C543D291A08396700C5D9B2 /* PBXContainerItemProxy */;
 		};
+		4CCA63551A61023800EBEC7D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C543D1B1A08396700C5D9B2 /* SystemKit */;
+			targetProxy = 4CCA63541A61023800EBEC7D /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -327,6 +340,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SystemKit/kinfo_proc-bridge.h";
 			};
