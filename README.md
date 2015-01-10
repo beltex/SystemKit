@@ -11,6 +11,37 @@ for OS X folks, for more system related statistics, see
 [SMCKit](https://github.com/beltex/SMCKit), an Apple SMC library in Swift.
 
 
+### Example
+
+Sample ouput from
+[example](https://github.com/beltex/SystemKit/blob/master/Example/main.swift).
+
+```
+// MACHINE STATUS
+
+-- CPU --
+  PHYSICAL CORES:  2
+  LOGICAL CORES:   2
+  SYSTEM:          10%
+  USER:            17%
+  IDLE:            71%
+  NICE:            0%
+
+-- MEMORY --
+  PHYSICAL SIZE:   7.75GB
+  FREE:            1.33GB
+  WIRED:           866MB
+  ACTIVE:          5.04GB
+  INACTIVE:        516MB
+  COMPRESSED:      0MB
+
+-- SYSTEM --
+  PROCESS COUNT:   197
+  THREAD COUNT:    967
+  LOAD AVERAGE:    [3.18, 3.89, 3.99]
+  MACH FACTOR:     (0.436, 0.385, 0.322)
+```
+
 ### References
 
 - [top](http://www.opensource.apple.com/source/top/)
