@@ -36,10 +36,22 @@ Sample ouput from
   COMPRESSED:      0MB
 
 -- SYSTEM --
-  PROCESS COUNT:   197
-  THREAD COUNT:    967
+  PROCESSES:       197
+  THREADS:         967
   LOAD AVERAGE:    [3.18, 3.89, 3.99]
   MACH FACTOR:     (0.436, 0.385, 0.322)
+
+-- BATTERY --
+  AC POWERED:      true
+  CHARGED:         true
+  CHARGING:        false
+  CHARGE:          100.0%
+  CAPACITY:        1675 mAh
+  MAX CAPACITY:    1675 mAh
+  DESGIN CAPACITY: 5450 mAh
+  CYCLES:          646
+  MAX CYCLES:      1000
+  TEMPERATURE:     30.0°C
 ```
 
 ### References

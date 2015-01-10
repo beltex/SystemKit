@@ -109,7 +109,7 @@ public struct Battery {
         if (service == 0) {
             #if DEBUG
                 println("ERROR - \(__FILE__):\(__FUNCTION__) -"
-                        + " \(IOSERVICE_BATTERY) service not found")
+                        + " \(Battery.IOSERVICE_BATTERY) service not found")
             #endif
             return kIOReturnNotFound
         }

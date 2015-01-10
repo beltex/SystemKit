@@ -45,8 +45,8 @@ println("\tPHYSICAL SIZE:   \(System.physicalMemory())GB")
 
 let memoryUsage = System.memoryUsage()
 func memoryUnit(value: Double) -> String {
-    if (value < 1.0) { return String(Int(value * 1000.0))    + "MB" }
-    else             { return NSString(format:"%.2f", value) + "GB" }
+    if value < 1.0 { return String(Int(value * 1000.0))    + "MB" }
+    else           { return NSString(format:"%.2f", value) + "GB" }
 }
 
 println("\tFREE:            \(memoryUnit(memoryUsage.free))")
@@ -57,9 +57,27 @@ println("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
 
 
 println("\n-- SYSTEM --")
-println("\tPROCESS COUNT:   \(System.processCount())")
-println("\tTHREAD COUNT:    \(System.threadCount())")
+println("\tPROCESSES:       \(System.processCount())")
+println("\tTHREADS:         \(System.threadCount())")
 
 let loadAverage = System.loadAverage().map({ NSString(format:"%.2f", $0) })
 println("\tLOAD AVERAGE:    \(loadAverage)")
 println("\tMACH FACTOR:     \(System.machFactor())")
+
+
+var battery = Battery()
+if battery.open() != kIOReturnSuccess { exit(0) }
+
+println("\n-- BATTERY --")
+println("\tAC POWERED:      \(battery.isACPowered())")
+println("\tCHARGED:         \(battery.isCharged())")
+println("\tCHARGING:        \(battery.isCharging())")
+println("\tCHARGE:          \(battery.charge())%")
+println("\tCAPACITY:        \(battery.currentCapacity()) mAh")
+println("\tMAX CAPACITY:    \(battery.maxCapactiy()) mAh")
+println("\tDESGIN CAPACITY: \(battery.designCapacity()) mAh")
+println("\tCYCLES:          \(battery.cycleCount())")
+println("\tMAX CYCLES:      \(battery.designCycleCount())")
+println("\tTEMPERATURE:     \(battery.temperature())°C")
+
+battery.close()
