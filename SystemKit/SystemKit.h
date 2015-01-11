@@ -35,7 +35,11 @@ FOUNDATION_EXPORT const unsigned char SystemKitVersionString[];
 // In this header, you should import all the public headers of your framework
 // using statements like #import <SystemKit/PublicHeader.h>
 
-//#import <SystemKit/kinfo_proc-bridge.h>
+
+//--------------------------------------------------------------------------
+// MARK: BRIDGE
+//--------------------------------------------------------------------------
+
 
 // This is copied from kinfo_proc-bridge.h. Temp fix, as frameworks don't allow
 // bridging headers
@@ -46,13 +50,14 @@ FOUNDATION_EXPORT const unsigned char SystemKitVersionString[];
 // Temp simplified struct with only the things we need for now
 typedef struct {
     struct timeval __p_starttime;     // Process start time - p_un.__p_starttime
-    int	p_flag;			              // P_* flags
-    char	p_stat;			          // S* process status
-    char	p_comm[MAXCOMLEN+1];
-    struct	_ucred e_ucred;		      // Current credentials
-    pid_t	e_ppid;                   // Parent process id
+    int    p_flag;                    // P_* flags
+    char   p_stat;                    // S* process status
+    char   p_comm[MAXCOMLEN+1];
+    struct _ucred e_ucred;            // Current credentials
+    pid_t  e_ppid;                    // Parent process id
+    
     // TODO: Why does kinfo_proc have this as pid_t? top works with it as gid_t
-    gid_t	e_pgid;                   // Process group id
+    gid_t  e_pgid;                    // Process group id
 } kinfo_proc_systemkit;
 
 int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk);
