@@ -52,6 +52,7 @@ Sample ouput from
   CYCLES:          646
   MAX CYCLES:      1000
   TEMPERATURE:     30.0°C
+  TIME REMAINING:  0:45
 ```
 
 ### References

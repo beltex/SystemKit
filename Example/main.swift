@@ -79,5 +79,6 @@ println("\tDESGIN CAPACITY: \(battery.designCapacity()) mAh")
 println("\tCYCLES:          \(battery.cycleCount())")
 println("\tMAX CYCLES:      \(battery.designCycleCount())")
 println("\tTEMPERATURE:     \(battery.temperature())°C")
+println("\tTIME REMAINING:  \(battery.timeRemainingFormatted())")
 
 battery.close()

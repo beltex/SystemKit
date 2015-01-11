@@ -215,9 +215,9 @@ public struct Battery {
     
     
     /**
-    Get the desgined cycle count of the battery.
+    Get the designed cycle count of the battery.
     
-    :returns:
+    https://en.wikipedia.org/wiki/Charge_cycle
     */
     public func designCycleCount() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
@@ -229,7 +229,7 @@ public struct Battery {
     
     
     /**
-    Is the machine powered by AC?
+    Is the machine powered by AC? Plugged into the charger.
     
     :returns: True if it is, false otherwise.
     */
@@ -271,25 +271,51 @@ public struct Battery {
     
     
     /**
-    What is the current charge of the machine?
+    What is the current charge of the machine? As seen in the battery status 
+    menu bar. This is the currentCapacity / maxCapacity.
+    
+    :returns: The current charge as a % out of 100.
     */
     public func charge() -> Double {
         return floor(Double(currentCapacity()) / Double(maxCapactiy()) * 100.0)
     }
     
     
-    public func timeRemaining() -> Double {
-        // TODO: Time format return?
+    /**
+    The time remaining to full charge (if plugged into AC), or the time
+    remaining to full discharge (running on battery). See also
+    timeRemainingFormatted().
+    
+    :returns: Time remaining in minutes.
+    */
+    public func timeRemaining() -> Int {        
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.TimeRemaining.rawValue,
                                                    kCFAllocatorDefault,
                                                    UInt32(kNilOptions))
-        return prop.takeUnretainedValue() as Double
+        return prop.takeUnretainedValue() as Int
     }
 
     
     /**
+    Same as timeRemaining(), but returns as a human readable time format, as
+    seen in the battery status menu bar.
+    
+    :returns: Time remaining string in the format <HOURS>:<MINUTES>
+    */
+    public func timeRemainingFormatted() -> String {
+        let time = timeRemaining()
+        return NSString(format: "%d:%02d", time / 60, time % 60)
+    }
+    
+    
+    /**
     Get the current temperature of the battery.
+    
+    "MacBook works best at 50° to 95° F (10° to 35° C). Storage temperature: 
+     -4° to 113° F (-20° to 45° C)." - via Apple
+    
+    http://www.apple.com/batteries/maximizing-performance/
     
     :returns: Battery temperature, by default in Celsius.
     */
