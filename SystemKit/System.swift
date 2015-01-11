@@ -144,7 +144,7 @@ public struct System {
     
     
     //--------------------------------------------------------------------------
-    // MARK: STATIC METHODS
+    // MARK: PUBLIC STATIC METHODS
     //--------------------------------------------------------------------------
     
     
@@ -164,9 +164,9 @@ public struct System {
         switch type {
             case .SHORT:
                 let result = System.hostLoadInfo().avenrun
-                avg[0] = Double(result.0) / Double(LOAD_SCALE)
-                avg[1] = Double(result.1) / Double(LOAD_SCALE)
-                avg[2] = Double(result.0) / Double(LOAD_SCALE)
+                avg = [Double(result.0) / Double(LOAD_SCALE),
+                       Double(result.1) / Double(LOAD_SCALE),
+                       Double(result.2) / Double(LOAD_SCALE)]
             case .LONG:
                 getloadavg(&avg, 3)
         }
@@ -175,12 +175,12 @@ public struct System {
     }
     
     
-    public static func machFactor() -> (Double, Double, Double) {
+    public static func machFactor() -> [Double] {
         let result = System.hostLoadInfo().mach_factor
         
-        return (Double(result.0) / Double(LOAD_SCALE),
+        return [Double(result.0) / Double(LOAD_SCALE),
                 Double(result.1) / Double(LOAD_SCALE),
-                Double(result.2) / Double(LOAD_SCALE))
+                Double(result.2) / Double(LOAD_SCALE)]
     }
     
     

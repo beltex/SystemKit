@@ -27,7 +27,8 @@
 #include "kinfo_proc-bridge.h"
 
 /**
-Get kinfo_proc for given process via PID. See link for why.
+Get kinfo_proc for given process via PID. See link for why we need to do this in
+C and not Swift, currently.
 
 https://github.com/beltex/SystemKit/issues/12
 */
