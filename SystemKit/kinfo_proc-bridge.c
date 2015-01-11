@@ -26,7 +26,11 @@
 
 #include "kinfo_proc-bridge.h"
 
+/**
+Get kinfo_proc for given process via PID. See link for why.
 
+https://github.com/beltex/SystemKit/issues/12
+*/
 int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk)
 {
     struct kinfo_proc kinfo;

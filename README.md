@@ -59,6 +59,7 @@ Sample ouput from
 - [top](http://www.opensource.apple.com/source/top/)
 - [hostinfo](http://www.opensource.apple.com/source/system_cmds/)
 - [vm_stat](http://www.opensource.apple.com/source/system_cmds/)
+- [PowerManagement](http://www.opensource.apple.com/source/PowerManagement/)
 - iStat Pro
 
 

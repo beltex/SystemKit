@@ -43,23 +43,20 @@ class SystemKitTests: XCTestCase {
     }
     
     func testBattery() {
-        if !Battery.hasBattery() {
-            return
-        }
-        
         var battery = Battery()
-        assert(battery.open() == kIOReturnSuccess)
         
-        //XCTAssertTrue((battery.isCharging() && battery.isACPowered()))
+        // Is it a laptop?
+        // TODO: pmset may have a better way of doing this
+        if battery.open() != kIOReturnSuccess { return }
         
-        battery.close()
+        // testOpenConnectionTwice
+        XCTAssertNotEqual(battery.open(), kIOReturnSuccess)
+        
+        // testCloseConnectionTwice
+        XCTAssertEqual(battery.close(), kIOReturnSuccess)
+        //XCTAssertNotEqual(battery.close(), kIOReturnSuccess)
+        
+        // Test that we can reopen and things still work
+        //battery.open()
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
 }

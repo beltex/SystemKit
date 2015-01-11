@@ -28,10 +28,11 @@ import IOKit
 import Foundation
 
 /**
-API to read stats from the battery. Only applicable to laptops (MacBooks).
-OS X only in other words.
+Battery statistics for OS X, read-only.
 
-TODO: None of this will work on iOS as I/O Kit is a private framework there
+http://www.apple.com/batteries/
+
+TODO: None of this will work for iOS as I/O Kit is a private framework there
 */
 public struct Battery {
     
@@ -60,6 +61,7 @@ public struct Battery {
         /// Current charge
         case CurrentCapacity  = "CurrentCapacity"
         case CycleCount       = "CycleCount"
+        /// Originally DesignCapacity == MaxCapacity
         case DesignCapacity   = "DesignCapacity"
         case DesignCycleCount = "DesignCycleCount9C"
         case FullyCharged     = "FullyCharged"
@@ -67,6 +69,7 @@ public struct Battery {
         /// Current max charge (this degrades over time)
         case MaxCapacity      = "MaxCapacity"
         case Temperature      = "Temperature"
+        /// Time remaining to charge/discharge
         case TimeRemaining    = "TimeRemaining"
     }
     
@@ -102,14 +105,23 @@ public struct Battery {
     :returns: kIOReturnSuccess on success.
     */
     public mutating func open() -> kern_return_t {
+        if (service != 0) {
+            #if DEBUG
+                println("WARNING - \(__FILE__):\(__FUNCTION__) - " +
+                        "\(Battery.IOSERVICE_BATTERY) connection already open")
+            #endif
+            return kIOReturnStillOpen
+        }
+        
+        
         // TODO: Could there be more than one service? serveral batteries?
         service = IOServiceGetMatchingService(kIOMasterPortDefault,
          IOServiceNameMatching(Battery.IOSERVICE_BATTERY).takeUnretainedValue())
         
         if (service == 0) {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) -"
-                        + " \(Battery.IOSERVICE_BATTERY) service not found")
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - " +
+                        "\(Battery.IOSERVICE_BATTERY) service not found")
             #endif
             return kIOReturnNotFound
         }
@@ -123,17 +135,30 @@ public struct Battery {
     
     :returns: kIOReturnSuccess on success.
     */
-    public func close() -> kern_return_t {
-        return IOObjectRelease(service)
+    public mutating func close() -> kern_return_t {
+        let result = IOObjectRelease(service)
+        service    = 0     // Reset this incase open() is called again
+        
+        #if DEBUG
+            if (result != kIOReturnSuccess) {
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - Failed to close")
+            }
+        #endif
+        
+        return result
     }
     
     
+    //--------------------------------------------------------------------------
+    // MARK: PUBLIC METHODS - BATTERY
+    //--------------------------------------------------------------------------
+    
+    
     /**
-    Get the current capacity of the battery.
+    Get the current capacity of the battery in mAh. This is essientally the
+    current charge of the battery.
     
-    TODO: Units
-    
-    :returns:
+    https://en.wikipedia.org/wiki/Ampere-hour
     */
     public func currentCapacity() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
@@ -144,6 +169,12 @@ public struct Battery {
     }
     
     
+    /**
+    Get the current max capacity of the battery in mAh. This degrades over time
+    from the original design capacity.
+    
+    https://en.wikipedia.org/wiki/Ampere-hour
+    */
     public func maxCapactiy() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.MaxCapacity.rawValue,
@@ -154,11 +185,11 @@ public struct Battery {
     
     
     /**
-    Get the designed capacity of the battery.
+    Get the designed capacity of the battery in mAh. This is a static value.
+    The max capacity will be equal to this when new, and as it degrades over
+    time, be less than this.
     
-    TODO: Units
-    
-    :returns:
+    https://en.wikipedia.org/wiki/Ampere-hour
     */
     public func designCapacity() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
@@ -171,8 +202,8 @@ public struct Battery {
     
     /**
     Get the current cycle count of the battery.
-    
-    :returns:
+
+    https://en.wikipedia.org/wiki/Charge_cycle
     */
     public func cycleCount() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
