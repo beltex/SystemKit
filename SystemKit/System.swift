@@ -86,6 +86,7 @@ public struct System {
     }
     
     
+    /// Options for loadAverage()
     public enum LOAD_AVG {
         /// 5, 30, 60 second samples
         case SHORT
@@ -117,6 +118,10 @@ public struct System {
     //--------------------------------------------------------------------------
     
     
+    /**
+    Get CPU usage (system, user, idle, nice). Determined by the delta between
+    the current and last call. Thus, first call will always be inaccurate.
+    */
     public mutating func usageCPU() -> (system : Double,
                                         user   : Double,
                                         idle   : Double,
@@ -148,16 +153,32 @@ public struct System {
     //--------------------------------------------------------------------------
     
     
+    /// Number of physical cores on this machine.
     public static func physicalCores() -> Int {
         return Int(System.hostBasicInfo().physical_cpu)
     }
     
     
+    /**
+    Number of logical cores on this machine. Will be equal to physicalCores()
+    unless it has hyper-threading, in which case it will be double.
+    
+    https://en.wikipedia.org/wiki/Hyper-threading
+    */
     public static func logicalCores() -> Int {
         return Int(System.hostBasicInfo().logical_cpu)
     }
     
     
+    /**
+    System load average at 3 intervals.
+    
+    "Measures the average number of threads in the run queue."
+    
+    - via hostinfo manual page
+    
+    https://en.wikipedia.org/wiki/Load_(computing)
+    */
     public static func loadAverage(type: LOAD_AVG = .LONG) -> [Double] {
         var avg = [Double](count: 3, repeatedValue: 0)
         
@@ -175,6 +196,19 @@ public struct System {
     }
     
     
+    /**
+    System mach factor at 3 intervals.
+    
+    "A variant of the load average which measures the processing resources
+    available to a new thread. Mach factor is based on the number of CPUs
+    divided by (1 + the number of runnablethreads) or the number of CPUs minus
+    the number of runnable threads when the number of runnable threads is less
+    than the number of CPUs. The closer the Mach factor value is to zero, the
+    higher the load. On an idle system with a fixed number of active processors,
+    the mach factor will be equal to the number of CPUs."
+    
+    - via hostinfo manual page
+    */
     public static func machFactor() -> [Double] {
         let result = System.hostLoadInfo().mach_factor
         
@@ -184,21 +218,27 @@ public struct System {
     }
     
     
+    /// Total number of processes
     public static func processCount() -> Int {
         return Int(System.processorLoadInfo().task_count)
     }
     
     
+    /// Total number of threads
     public static func threadCount() -> Int {
         return Int(System.processorLoadInfo().thread_count)
     }
     
     
+    /// Size of physical memory on this machine
     public static func physicalMemory(unit: Unit = .Gigabyte) -> Double {
         return Double(System.hostBasicInfo().max_mem) / unit.rawValue
     }
     
     
+    /**
+    System memory usage (free, active, inactive, wired, compressed).
+    */
     public static func memoryUsage() -> (free       : Double,
                                          active     : Double,
                                          inactive   : Double,
@@ -266,7 +306,6 @@ public struct System {
     private static func hostLoadInfo() -> host_load_info {
         // - Can get stat from cl with w or uptime as well
         // - getloadavg()
-        // http://en.wikipedia.org/wiki/Load_(computing)
         
         var size = HOST_LOAD_INFO_COUNT
         var hi = host_info_t.alloc(Int(HOST_LOAD_INFO_COUNT))
