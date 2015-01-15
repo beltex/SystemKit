@@ -52,7 +52,7 @@ typedef struct {
     struct timeval __p_starttime;     // Process start time - p_un.__p_starttime
     int    p_flag;                    // P_* flags
     char   p_stat;                    // S* process status
-    char   p_comm[MAXCOMLEN+1];
+    char   p_comm[MAXCOMLEN + 1];
     struct _ucred e_ucred;            // Current credentials
     pid_t  e_ppid;                    // Parent process id
     

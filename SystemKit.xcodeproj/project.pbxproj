@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C4656641A678B9E0091A8CB /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4656631A678B9E0091A8CB /* Process.swift */; };
+		4C4656651A6790A40091A8CB /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4656631A678B9E0091A8CB /* Process.swift */; };
 		4C4BE60A1A083A690085170A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BE6091A083A690085170A /* main.swift */; };
 		4C4BE60E1A083A760085170A /* System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D381A08398500C5D9B2 /* System.swift */; };
 		4C4BE60F1A083A760085170A /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D3A1A08399100C5D9B2 /* Battery.swift */; };
@@ -52,6 +54,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C4656631A678B9E0091A8CB /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		4C4BE6071A083A690085170A /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C4BE6091A083A690085170A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4C543D1C1A08396700C5D9B2 /* SystemKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SystemKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +129,7 @@
 			children = (
 				4C543D3A1A08399100C5D9B2 /* Battery.swift */,
 				4C543D381A08398500C5D9B2 /* System.swift */,
+				4C4656631A678B9E0091A8CB /* Process.swift */,
 				4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */,
 				4C8004A11A23B53C00D57D90 /* kinfo_proc-bridge.c */,
 				4C8004A21A23B53C00D57D90 /* kinfo_proc-bridge.h */,
@@ -290,6 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C4656651A6790A40091A8CB /* Process.swift in Sources */,
 				4C6D98B91A3A905E00BA2B36 /* IOReturn.swift in Sources */,
 				4C8004A51A23B58900D57D90 /* kinfo_proc-bridge.c in Sources */,
 				4C4BE60E1A083A760085170A /* System.swift in Sources */,
@@ -303,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C543D391A08398500C5D9B2 /* System.swift in Sources */,
+				4C4656641A678B9E0091A8CB /* Process.swift in Sources */,
 				4C6D98B81A3A8FF500BA2B36 /* IOReturn.swift in Sources */,
 				4C8004A31A23B53C00D57D90 /* kinfo_proc-bridge.c in Sources */,
 				4C543D3B1A08399100C5D9B2 /* Battery.swift in Sources */,

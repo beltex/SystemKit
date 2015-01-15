@@ -42,6 +42,7 @@ int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk)
     
     int res = sysctl(mib, miblen, &kinfo, &len, NULL, 0);
     if (res != 0) {
+        // TODO: DEBUG macro here
         printf("ERROR");
         return -1;
     }
@@ -52,12 +53,13 @@ int kinfo_for_pid(pid_t pid, kinfo_proc_systemkit *kinfo_sk)
     kinfo_sk->__p_starttime = kinfo.kp_proc.p_un.__p_starttime;
     kinfo_sk->p_stat        = kinfo.kp_proc.p_stat;
     kinfo_sk->p_flag        = kinfo.kp_proc.p_flag;
-    
-    printf("NAME: %s\n", kinfo.kp_proc.p_comm);
-    //kinfo_sk->p_comm        = kinfo.kp_proc.p_comm;
     kinfo_sk->e_pgid        = kinfo.kp_eproc.e_pgid;
     kinfo_sk->e_ppid        = kinfo.kp_eproc.e_ppid;
     kinfo_sk->e_ucred       = kinfo.kp_eproc.e_ucred;
+    
+    for (int i = 0; i < MAXCOMLEN + 1; i++) {
+        kinfo_sk->p_comm[i] = kinfo.kp_proc.p_comm[i];
+    }
     
     return 0;
 }
