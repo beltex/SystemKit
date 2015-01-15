@@ -5,10 +5,10 @@ An OS X system library in Swift based off of
 [libtop](http://www.opensource.apple.com/source/top/top-100.1.2/libtop.c), from
 Apple's top implementation.
 
-For an example usage of this library, see
-[dshb](https://github.com/beltex/dshb), an OS X system monitor in Swift. Also,
-for OS X folks, for more system related statistics, see
-[SMCKit](https://github.com/beltex/SMCKit), an Apple SMC library in Swift.
+- For an example usage of this library, see
+  [dshb](https://github.com/beltex/dshb), an OS X system monitor in Swift
+- For other system related statistics in Swift for OS X, see
+  [SMCKit](https://github.com/beltex/SMCKit)
 
 
 ### Example
@@ -39,7 +39,7 @@ Sample ouput from
   PROCESSES:       197
   THREADS:         967
   LOAD AVERAGE:    [3.18, 3.89, 3.99]
-  MACH FACTOR:     (0.436, 0.385, 0.322)
+  MACH FACTOR:     [0.436, 0.385, 0.322]
 
 -- BATTERY --
   AC POWERED:      true
