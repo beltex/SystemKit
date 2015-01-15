@@ -35,11 +35,11 @@ public struct ProcessInfo {
     let uid     : Int
     let command : String
     /// sys/proc.h - SIDL, SRUN, SSLEEP, SSTOP, SZOMB
-    var status  : Int32
+    var status  : Int
     
     
     public init(pid: Int, ppid: Int, pgid: Int, uid: Int, command: String,
-                                                           status: Int32) {
+                                                           status: Int) {
         self.pid     = pid
         self.ppid    = ppid
         self.pgid    = pgid
@@ -52,6 +52,10 @@ public struct ProcessInfo {
 
 /// Process API
 public struct Process {
+    
+    private static let MACH_TASK_BASIC_INFO_COUNT: mach_msg_type_number_t =
+                 UInt32(sizeof(mach_task_basic_info_data_t) / sizeof(natural_t))
+
     
     public init() { }
     
@@ -152,17 +156,90 @@ public struct Process {
                         "UID: \(kinfoProc.uid); " +
                         "STATUS: \(kinfoProc.p_stat)")
                 
+                var machTask = machTaskBasicInfo(process)
+                
+                var tv = timeval(tv_sec: Int(0), tv_usec: 0)
+                var tvp = timeval(tv_sec: Int(machTask.user_time.seconds), tv_usec: Int32(machTask.user_time.microseconds))
+                var uvp = timeval(tv_sec: Int(machTask.system_time.seconds), tv_usec: Int32(machTask.system_time.microseconds))
+                timeradd(tvp, uvp: uvp, vvp: &tv)
+                println("TIME: \(timeFormat(tv))")
                 
                 var procInfo = ProcessInfo(pid: Int(pid),
                                            ppid: Int(kinfoProc.e_ppid),
                                            pgid: Int(kinfoProc.e_pgid),
                                            uid: Int(kinfoProc.uid),
                                            command: procCommand,
-                                           status: Int32(kinfoProc.p_stat))
+                                           status: Int(kinfoProc.p_stat))
                 processInfo.append(procInfo)
             }
         }
         
         return processInfo
+    }
+    
+    
+    //--------------------------------------------------------------------------
+    // MARK: PRIVATE METHODS
+    //--------------------------------------------------------------------------
+    
+    
+    private static func machTaskBasicInfo(process: task_t) -> mach_task_basic_info {
+        // NOTE: top uses TASK_BASIC_INFO_64 instead, but the mach/task_info.h
+        //       suggests to use MACH_TASK_BASIC_INFO instead
+        var count = MACH_TASK_BASIC_INFO_COUNT
+        var memoryInfo = task_info_t.alloc(Int(MACH_TASK_BASIC_INFO_COUNT))
+        memoryInfo.initialize(0)
+        
+        var result = task_info(process, UInt32(MACH_TASK_BASIC_INFO), memoryInfo, &count)
+        
+        if (result != KERN_SUCCESS) {
+            #if DEBUG
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                        + "\(result)")
+            #endif
+            return mach_task_basic_info(virtual_size: 0,
+                                        resident_size: 0,
+                                        resident_size_max: 0,
+                                        user_time: time_value_t(seconds: 0, microseconds: 0),
+                                        system_time: time_value_t(seconds: 0, microseconds: 0),
+                                        policy: 0,
+                                        suspend_count: 0)
+        }
+        
+        let data = UnsafePointer<mach_task_basic_info>(memoryInfo).memory
+        
+        memoryInfo.dealloc(Int(MACH_TASK_BASIC_INFO_COUNT))
+                
+        return data
+    }
+    
+    
+    /// Based on macro of the same name from sys/time.h
+    private static func timeradd(tvp: timeval, uvp: timeval, inout vvp: timeval) {
+        vvp.tv_sec  = tvp.tv_sec + uvp.tv_sec
+        vvp.tv_usec = tvp.tv_usec + uvp.tv_usec
+        if (vvp.tv_usec >= 1000000) {
+            vvp.tv_sec++
+            vvp.tv_usec -= 1000000
+        }
+    }
+    
+    
+    private static func timeFormat(tv: timeval) -> String {
+        var timeFormatted = String()
+        
+        let usec = tv.tv_usec
+        let sec  = tv.tv_sec
+        let min  = sec  / 60
+        let hour = min  / 60
+        let day  = hour / 24
+        
+        if (min < 100) {
+            return NSString(format: "%02u:%02u.%02u", min, sec % 60, usec / 10000)
+        }
+        else if (hour < 100) {
+            return  NSString(format: "%02u:%02u:%02u", hour, min % 60, sec % 60)
+        }
+        else { return NSString(format: "%u hrs", hour) }
     }
 }
