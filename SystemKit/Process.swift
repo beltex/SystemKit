@@ -25,15 +25,27 @@
 // THE SOFTWARE.
 
 import Darwin
+import Foundation
 
 /// Process information
 public struct ProcessInfo {
     let pid     : Int
+    let ppid    : Int
+    let pgid    : Int
+    let uid     : Int
     let command : String
+    /// sys/proc.h - SIDL, SRUN, SSLEEP, SSTOP, SZOMB
+    var status  : Int32
     
-    public init(pid: Int, command: String) {
-        self.pid = pid
+    
+    public init(pid: Int, ppid: Int, pgid: Int, uid: Int, command: String,
+                                                           status: Int32) {
+        self.pid     = pid
+        self.ppid    = ppid
+        self.pgid    = pgid
+        self.uid     = uid
         self.command = command
+        self.status  = status
     }
 }
 
@@ -103,15 +115,12 @@ public struct Process {
                 
                 result = pid_for_task(process, &pid)
                 
-                
-                var kinfoProc = kinfo_proc_systemkit(__p_starttime: timeval(tv_sec: 0, tv_usec: 0),
-                                                     p_flag: 0,
-                                                     p_stat: 0,
+                // BSD layer only stuff
+                var kinfoProc = kinfo_proc_systemkit(p_stat: 0,
                                                      p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                                                     e_ucred: _ucred(cr_ref: 0, cr_uid: 0, cr_ngroups: 0,
-                                                                     cr_groups: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
                                                      e_ppid: 0,
-                                                     e_pgid: 0)
+                                                     e_pgid: 0,
+                                                     uid: 0)
                 kinfo_for_pid(pid, &kinfoProc)
                 
                 
@@ -137,10 +146,19 @@ public struct Process {
                 if kinfoProc.p_comm.15 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.15)))) }
                 if kinfoProc.p_comm.16 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.16)))) }
 
-                println("PID: \(pid); \(procCommand)")
+                println("PID: \(pid); \(procCommand); " +
+                        "PPID: \(kinfoProc.e_ppid); " +
+                        "PGID: \(kinfoProc.e_pgid); " +
+                        "UID: \(kinfoProc.uid); " +
+                        "STATUS: \(kinfoProc.p_stat)")
                 
                 
-                var procInfo = ProcessInfo(pid: Int(pid), command: procCommand)
+                var procInfo = ProcessInfo(pid: Int(pid),
+                                           ppid: Int(kinfoProc.e_ppid),
+                                           pgid: Int(kinfoProc.e_pgid),
+                                           uid: Int(kinfoProc.uid),
+                                           command: procCommand,
+                                           status: Int32(kinfoProc.p_stat))
                 processInfo.append(procInfo)
             }
         }
@@ -148,4 +166,3 @@ public struct Process {
         return processInfo
     }
 }
-
