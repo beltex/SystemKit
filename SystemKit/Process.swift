@@ -27,24 +27,46 @@
 import Darwin
 import Foundation
 
+//--------------------------------------------------------------------------
+// MARK: PUBLIC GLOBAL PROPERTIES
+//--------------------------------------------------------------------------
+
+// As defined in <mach/machine.h>
+
+/// Assuming this is interpreted as unknown for now
+public let CPU_TYPE_ANY       : cpu_type_t = -1
+public let CPU_TYPE_X86       : cpu_type_t = 7
+public let CPU_TYPE_I386      : cpu_type_t = CPU_TYPE_X86   // For compatibility
+public let CPU_TYPE_X86_64    : cpu_type_t = CPU_TYPE_X86 | CPU_ARCH_ABI64
+public let CPU_TYPE_ARM       : cpu_type_t = 12
+public let CPU_TYPE_ARM64     : cpu_type_t = CPU_TYPE_ARM | CPU_ARCH_ABI64
+public let CPU_TYPE_POWERPC   : cpu_type_t = 18
+public let CPU_TYPE_POWERPC64 : cpu_type_t = CPU_TYPE_POWERPC | CPU_ARCH_ABI64
+
+
 /// Process information
 public struct ProcessInfo {
+    
     let pid     : Int
     let ppid    : Int
     let pgid    : Int
     let uid     : Int
     let command : String
+    /// What architecture was this process compiled for?
+    let arch    : cpu_type_t
     /// sys/proc.h - SIDL, SRUN, SSLEEP, SSTOP, SZOMB
-    var status  : Int
+    var status  : Int32
     
     
     public init(pid: Int, ppid: Int, pgid: Int, uid: Int, command: String,
-                                                           status: Int) {
+                                                             arch: cpu_type_t,
+                                                           status: Int32) {
         self.pid     = pid
         self.ppid    = ppid
         self.pgid    = pgid
         self.uid     = uid
         self.command = command
+        self.arch    = arch
         self.status  = status
     }
 }
@@ -115,7 +137,7 @@ public struct Process {
             // For each process
             for var i = 0; i < Int(processCount); ++i {
                 let process = processList[i]
-                var pid : pid_t = 0
+                var pid: pid_t = 0
                 
                 result = pid_for_task(process, &pid)
                 
@@ -124,7 +146,7 @@ public struct Process {
                                                      p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
                                                      e_ppid: 0,
                                                      e_pgid: 0,
-                                                     uid: 0)
+                                                        uid: 0)
                 kinfo_for_pid(pid, &kinfoProc)
                 
                 
@@ -150,11 +172,11 @@ public struct Process {
                 if kinfoProc.p_comm.15 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.15)))) }
                 if kinfoProc.p_comm.16 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.16)))) }
 
-                println("PID: \(pid); \(procCommand); " +
-                        "PPID: \(kinfoProc.e_ppid); " +
-                        "PGID: \(kinfoProc.e_pgid); " +
-                        "UID: \(kinfoProc.uid); " +
-                        "STATUS: \(kinfoProc.p_stat)")
+                println("PID: \(pid); \(procCommand); CPU TYPE: \(arch(pid))")
+//                        "PPID: \(kinfoProc.e_ppid); " +
+//                        "PGID: \(kinfoProc.e_pgid); " +
+//                        "UID: \(kinfoProc.uid); " +
+//                        "STATUS: \(kinfoProc.p_stat)")
                 
                 var machTask = machTaskBasicInfo(process)
                 
@@ -169,7 +191,8 @@ public struct Process {
                                            pgid: Int(kinfoProc.e_pgid),
                                            uid: Int(kinfoProc.uid),
                                            command: procCommand,
-                                           status: Int(kinfoProc.p_stat))
+                                           arch: arch(pid),
+                                           status: Int32(kinfoProc.p_stat))
                 processInfo.append(procInfo)
             }
         }
@@ -212,6 +235,33 @@ public struct Process {
                 
         return data
     }
+    
+    
+    public static func arch(pid: pid_t) -> cpu_type_t {
+        var arch: cpu_type_t = CPU_TYPE_ANY
+        
+        // "sysctl.proc_cputype" not documented anywhere. Doesn't even show
+        // up when doing sysctl -A. But you can see it if you run sysctl sysctl.
+        // Hard coding it does carry a risk, as it could change down the road.
+        // Hence, top calls sysctlnametomib() first
+        var mib: [Int32] = [0, 103, pid]
+        var len: size_t = UInt(sizeof(cpu_type_t))
+        
+        let result = sysctl(&mib, UInt32(mib.count), &arch, &len, nil, 0)
+        
+        #if DEBUG
+            if result != 0 {
+                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__)")
+            }
+        #endif
+        
+        return arch
+    }
+    
+    
+    //--------------------------------------------------------------------------
+    // MARK: PRIVATE METHODS - HELPERS
+    //--------------------------------------------------------------------------
     
     
     /// Based on macro of the same name from sys/time.h
