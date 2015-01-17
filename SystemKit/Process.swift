@@ -148,29 +148,11 @@ public struct Process {
                                                      e_pgid: 0,
                                                         uid: 0)
                 kinfo_for_pid(pid, &kinfoProc)
-                
-                
-                var procCommand = String()
-                
-                // FIXME: Very bad
-                // TODO: Command cut short?
-                if kinfoProc.p_comm.0  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.0))))  }
-                if kinfoProc.p_comm.1  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.1))))  }
-                if kinfoProc.p_comm.2  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.2))))  }
-                if kinfoProc.p_comm.3  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.3))))  }
-                if kinfoProc.p_comm.4  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.4))))  }
-                if kinfoProc.p_comm.5  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.5))))  }
-                if kinfoProc.p_comm.6  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.6))))  }
-                if kinfoProc.p_comm.7  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.7))))  }
-                if kinfoProc.p_comm.8  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.8))))  }
-                if kinfoProc.p_comm.9  > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.9))))  }
-                if kinfoProc.p_comm.10 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.10)))) }
-                if kinfoProc.p_comm.11 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.11)))) }
-                if kinfoProc.p_comm.12 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.12)))) }
-                if kinfoProc.p_comm.13 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.13)))) }
-                if kinfoProc.p_comm.14 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.14)))) }
-                if kinfoProc.p_comm.15 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.15)))) }
-                if kinfoProc.p_comm.16 > 0 { procCommand.append(Character(UnicodeScalar(Int(kinfoProc.p_comm.16)))) }
+
+                // TODO: Is the command cut short for some procs?
+                let procCommand = withUnsafePointer(&kinfoProc.p_comm) {
+                    String.fromCString(UnsafePointer($0))!
+                }
 
                 println("PID: \(pid); \(procCommand); CPU TYPE: \(arch(pid))")
 //                        "PPID: \(kinfoProc.e_ppid); " +
