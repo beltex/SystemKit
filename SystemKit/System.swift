@@ -100,9 +100,9 @@ public struct System {
     // MARK: PRIVATE PROPERTIES
     //--------------------------------------------------------------------------
     
-    
-    private var loadPrevious: host_cpu_load_info = host_cpu_load_info(cpu_ticks:
-                                                                      (0,0,0,0))
+
+    private static let machHost = mach_host_self()
+    private var loadPrevious = host_cpu_load_info(cpu_ticks: (0,0,0,0))
     
     
     //--------------------------------------------------------------------------
@@ -319,84 +319,67 @@ public struct System {
     private static func hostBasicInfo() -> host_basic_info {
         // TODO: Why is host_basic_info.max_mem val different from sysctl?
         
-        var size = HOST_BASIC_INFO_COUNT
-        var hi = host_info_t.alloc(Int(HOST_BASIC_INFO_COUNT))
-        hi.initialize(0)
+        var size     = HOST_BASIC_INFO_COUNT
+        var hostInfo = host_basic_info_t.alloc(1)
         
-        let result = host_info(mach_host_self(), HOST_BASIC_INFO, hi, &size)
+        let result = host_info(machHost, HOST_BASIC_INFO,
+                                         UnsafeMutablePointer(hostInfo),
+                                         &size)
         
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
+        let data = hostInfo.move()
+        hostInfo.dealloc(1)
+        
+        #if DEBUG
+            if result != KERN_SUCCESS {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
-            #endif
-            return host_basic_info(max_cpus         : 0,
-                                   avail_cpus       : 0,
-                                   memory_size      : 0,
-                                   cpu_type         : 0,
-                                   cpu_subtype      : 0,
-                                   cpu_threadtype   : 0,
-                                   physical_cpu     : 0,
-                                   physical_cpu_max : 0,
-                                   logical_cpu      : 0,
-                                   logical_cpu_max  : 0,
-                                   max_mem          : 0)
-        }
-        
-        let data = UnsafePointer<host_basic_info>(hi).memory
-        
-        hi.dealloc(Int(HOST_BASIC_INFO_COUNT))
+            }
+        #endif
         
         return data
     }
 
     
     private static func hostLoadInfo() -> host_load_info {
-        // - Can get stat from cl with w or uptime as well
-        // - getloadavg()
+        var size     = HOST_LOAD_INFO_COUNT
+        var hostInfo = host_load_info_t.alloc(1)
         
-        var size = HOST_LOAD_INFO_COUNT
-        var hi = host_info_t.alloc(Int(HOST_LOAD_INFO_COUNT))
-        hi.initialize(0)
+        let result = host_statistics(machHost, HOST_LOAD_INFO,
+                                               UnsafeMutablePointer(hostInfo),
+                                               &size)
         
-        let result = host_statistics(mach_host_self(), HOST_LOAD_INFO, hi, &size)
+        let data = hostInfo.move()
+        hostInfo.dealloc(1)
         
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
+        #if DEBUG
+            if result != KERN_SUCCESS {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
-            #endif
-            return host_load_info(avenrun: (0,0,0), mach_factor: (0,0,0))
-        }
-        
-        let data = UnsafePointer<host_load_info>(hi).memory
-        
-        hi.dealloc(Int(HOST_LOAD_INFO_COUNT))
+            }
+        #endif
         
         return data
     }
     
     
     private static func hostCPULoadInfo() -> host_cpu_load_info {
-        var size = HOST_CPU_LOAD_INFO_COUNT
-        var hi = host_info_t.alloc(Int(HOST_CPU_LOAD_INFO_COUNT))
-        hi.initialize(0)
+        var size     = HOST_CPU_LOAD_INFO_COUNT
+        var hostInfo = host_cpu_load_info_t.alloc(1)
         
-        let result = host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, hi,
-                                                                          &size)
+        let result = host_statistics(machHost, HOST_CPU_LOAD_INFO,
+                                               UnsafeMutablePointer(hostInfo),
+                                               &size)
         
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
+        let data = hostInfo.move()
+        hostInfo.dealloc(1)
+        
+        #if DEBUG
+            if result != KERN_SUCCESS {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
-            #endif
-            return host_cpu_load_info(cpu_ticks: (0,0,0,0))
-        }
-        
-        let data = UnsafePointer<host_cpu_load_info>(hi).memory
-        
-        hi.dealloc(Int(HOST_CPU_LOAD_INFO_COUNT))
-        
+            }
+        #endif
+
         return data
     }
     
@@ -404,8 +387,9 @@ public struct System {
     private static func processorLoadInfo() -> processor_set_load_info {
         // NOTE: Duplicate load average and mach factor here
         
+        // TODO: Move processor_set_default() call to init()
         var pset: processor_set_name_t = 0
-        var result = processor_set_default(mach_host_self(), &pset)
+        var result = processor_set_default(machHost, &pset)
         
         if (result != KERN_SUCCESS) {
             #if DEBUG
@@ -420,14 +404,11 @@ public struct System {
 
         
         var count = PROCESSOR_SET_LOAD_INFO_COUNT
-        var info_out = processor_set_info_t.alloc(
-                                             Int(PROCESSOR_SET_LOAD_INFO_COUNT))
-        info_out.initialize(0)
-        
+        var info_out = processor_set_load_info_t.alloc(1)
         
         result = processor_set_statistics(pset,
                                           PROCESSOR_SET_LOAD_INFO,
-                                          info_out,
+                                          UnsafeMutablePointer(info_out),
                                           &count)
         
         if (result != KERN_SUCCESS) {
@@ -435,18 +416,11 @@ public struct System {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             #endif
-            return processor_set_load_info(task_count   : 0,
-                                           thread_count : 0,
-                                           load_average : 0,
-                                           mach_factor  : 0)
         }
         
         
-        // TODO: Check count size?
-        let data = UnsafePointer<processor_set_load_info>(info_out).memory
-        
-        
-        info_out.dealloc(Int(PROCESSOR_SET_LOAD_INFO_COUNT))
+        let data = info_out.move()
+        info_out.dealloc(1)
         
         return data
     }
@@ -460,47 +434,23 @@ public struct System {
     and above, with both ARM & ARM64.
     */
     private static func VMStatistics64() -> vm_statistics64 {
-        var size = HOST_VM_INFO64_COUNT
-        var hi = host_info_t.alloc(Int(HOST_VM_INFO64_COUNT))
-        hi.initialize(0)
+        var size     = HOST_VM_INFO64_COUNT
+        var hostInfo = vm_statistics64_t.alloc(1)
         
-        let result = host_statistics64(mach_host_self(), HOST_VM_INFO64, hi,
-                                                                         &size)
+        let result = host_statistics64(machHost,
+                                       HOST_VM_INFO64,
+                                       UnsafeMutablePointer(hostInfo),
+                                       &size)
+
+        let data = hostInfo.move()
+        hostInfo.dealloc(1)
         
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
+        #if DEBUG
+            if result != KERN_SUCCESS {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
-                        + "\(result)")
-            #endif
-            return vm_statistics64(free_count                             : 0,
-                                   active_count                           : 0,
-                                   inactive_count                         : 0,
-                                   wire_count                             : 0,
-                                   zero_fill_count                        : 0,
-                                   reactivations                          : 0,
-                                   pageins                                : 0,
-                                   pageouts                               : 0,
-                                   faults                                 : 0,
-                                   cow_faults                             : 0,
-                                   lookups                                : 0,
-                                   hits                                   : 0,
-                                   purges                                 : 0,
-                                   purgeable_count                        : 0,
-                                   speculative_count                      : 0,
-                                   decompressions                         : 0,
-                                   compressions                           : 0,
-                                   swapins                                : 0,
-                                   swapouts                               : 0,
-                                   compressor_page_count                  : 0,
-                                   throttled_count                        : 0,
-                                   external_page_count                    : 0,
-                                   internal_page_count                    : 0,
-                                   total_uncompressed_pages_in_compressor : 0)
-        }
-        
-        let data = UnsafePointer<vm_statistics64>(hi).memory
-        
-        hi.dealloc(Int(HOST_VM_INFO64_COUNT))
+                    + "\(result)")
+            }
+        #endif
         
         return data
     }
