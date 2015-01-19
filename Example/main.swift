@@ -57,6 +57,14 @@ println("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
 
 
 println("\n-- SYSTEM --")
+
+let names = System.uname()
+println("\tSYSNAME:         \(names.sysname)")
+println("\tNODENAME:        \(names.nodename)")
+println("\tRELEASE:         \(names.release)")
+println("\tVERSION:         \(names.version)")
+println("\tMACHINE:         \(names.machine)")
+
 println("\tPROCESSES:       \(System.processCount())")
 println("\tTHREADS:         \(System.threadCount())")
 

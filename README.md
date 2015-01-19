@@ -36,6 +36,11 @@ Sample ouput from
   COMPRESSED:      0MB
 
 -- SYSTEM --
+  SYSNAME:         Darwin
+  NODENAME:        beltex.local
+  RELEASE:         13.4.0
+  VERSION:         Darwin Kernel Version 13.4.0: Sun Aug 17 19:50:11 PDT 2014...
+  MACHINE:         x86_64
   PROCESSES:       197
   THREADS:         967
   LOAD AVERAGE:    [3.18, 3.89, 3.99]

@@ -106,7 +106,7 @@ public struct System {
     
     
     //--------------------------------------------------------------------------
-    // MARK: INITIALIZERS
+    // MARK: PUBLIC INITIALIZERS
     //--------------------------------------------------------------------------
     
     
@@ -153,6 +153,54 @@ public struct System {
     //--------------------------------------------------------------------------
     
     
+    /**
+    sysname       Name of the operating system implementation.
+    nodename      Network name of this machine.
+    release       Release level of the operating system.
+    version       Version level of the operating system.
+    machine       Machine hardware platform.
+
+    Via uname(3) manual page.
+    */
+    public static func uname() -> (sysname: String, nodename: String,
+                                                     release: String,
+                                                     version: String,
+                                                     machine: String) {
+        // Takes a generic pointer type because the type were dealing with
+        // (from the utsname struct) is a huge tuple of Int8s (once bridged to
+        // Swift), so it would be really messy to go that route (would have to
+        // type it all out explicitly)
+        func toString<T>(ptr: UnsafePointer<T>) -> String {
+            return String.fromCString(UnsafePointer<CChar>(ptr))!
+        }
+
+        var tuple  = ("", "", "", "", "")
+        var names  = UnsafeMutablePointer<utsname>.alloc(1)
+        let result = Foundation.uname(names)
+
+        #if DEBUG
+            if result != 0 {
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                        + "\(result)")
+            }
+        #endif
+
+        if result == 0 {
+            let sysname  = withUnsafePointer(&names.memory.sysname,  toString)
+            let nodename = withUnsafePointer(&names.memory.nodename, toString)
+            let release  = withUnsafePointer(&names.memory.release,  toString)
+            let version  = withUnsafePointer(&names.memory.version,  toString)
+            let machine  = withUnsafePointer(&names.memory.machine,  toString)
+
+            tuple = (sysname, nodename, release, version, machine)
+        }
+
+        names.dealloc(1)
+
+        return tuple
+    }
+
+
     /// Number of physical cores on this machine.
     public static func physicalCores() -> Int {
         return Int(System.hostBasicInfo().physical_cpu)
