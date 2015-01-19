@@ -57,6 +57,8 @@ println("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
 
 
 println("\n-- SYSTEM --")
+println("\tMODEL:           \(System.modelName())")
+
 
 let names = System.uname()
 println("\tSYSNAME:         \(names.sysname)")

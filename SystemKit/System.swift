@@ -153,6 +153,33 @@ public struct System {
     //--------------------------------------------------------------------------
     
     
+    /// Get the model name of this machine. Same as "sysctl hw.model"
+    public static func modelName() -> String {
+        var name = String()
+        var mib  = [CTL_HW, HW_MODEL]
+
+        // Max model name size not defined by sysctl. Instead we use io_name_t
+        // via I/O Kit which can also get the model name
+        var size: size_t = size_t(sizeof(io_name_t))
+
+        var ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
+        let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
+
+        if result == 0 { name = String.fromCString(UnsafePointer(ptr))! }
+
+        ptr.dealloc(1)
+
+        #if DEBUG
+            if result != 0 {
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                        + "\(result)")
+            }
+        #endif
+
+        return name
+    }
+
+
     /**
     sysname       Name of the operating system implementation.
     nodename      Network name of this machine.

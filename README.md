@@ -36,6 +36,7 @@ Sample ouput from
   COMPRESSED:      0MB
 
 -- SYSTEM --
+  MODEL:           MacBookPro7,1
   SYSNAME:         Darwin
   NODENAME:        beltex.local
   RELEASE:         13.4.0
