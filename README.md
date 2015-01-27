@@ -11,6 +11,13 @@ Apple's top implementation.
   [SMCKit](https://github.com/beltex/SMCKit)
 
 
+### Requirements
+
+- [Xcode 6.1.1](https://developer.apple.com/xcode/downloads/)
+- OS X 10.9+
+    - This is due to Swift
+
+
 ### Example
 
 Sample ouput from
@@ -60,6 +67,7 @@ Sample ouput from
   TEMPERATURE:     30.0°C
   TIME REMAINING:  0:45
 ```
+
 
 ### References
 
