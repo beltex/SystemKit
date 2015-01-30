@@ -27,9 +27,9 @@
 import Darwin
 import Foundation
 
-//--------------------------------------------------------------------------
-// MARK: PUBLIC GLOBAL PROPERTIES
-//--------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// MARK: GLOBAL PUBLIC PROPERTIES
+//------------------------------------------------------------------------------
 
 // As defined in <mach/machine.h>
 
@@ -43,10 +43,12 @@ public let CPU_TYPE_ARM64     : cpu_type_t = CPU_TYPE_ARM | CPU_ARCH_ABI64
 public let CPU_TYPE_POWERPC   : cpu_type_t = 18
 public let CPU_TYPE_POWERPC64 : cpu_type_t = CPU_TYPE_POWERPC | CPU_ARCH_ABI64
 
+//------------------------------------------------------------------------------
+// MARK: PUBLIC STRUCTS
+//------------------------------------------------------------------------------
 
 /// Process information
 public struct ProcessInfo {
-    
     let pid     : Int
     let ppid    : Int
     let pgid    : Int
@@ -56,180 +58,132 @@ public struct ProcessInfo {
     let arch    : cpu_type_t
     /// sys/proc.h - SIDL, SRUN, SSLEEP, SSTOP, SZOMB
     var status  : Int32
-    
-    
-    public init(pid: Int, ppid: Int, pgid: Int, uid: Int, command: String,
-                                                             arch: cpu_type_t,
-                                                           status: Int32) {
-        self.pid     = pid
-        self.ppid    = ppid
-        self.pgid    = pgid
-        self.uid     = uid
-        self.command = command
-        self.arch    = arch
-        self.status  = status
-    }
 }
-
 
 /// Process API
 public struct Process {
     
-    private static let MACH_TASK_BASIC_INFO_COUNT: mach_msg_type_number_t =
-                 UInt32(sizeof(mach_task_basic_info_data_t) / sizeof(natural_t))
+    //--------------------------------------------------------------------------
+    // MARK: PRIVATE PROPERTIES
+    //--------------------------------------------------------------------------
 
+    private static let machHost = mach_host_self()
+    
+    //--------------------------------------------------------------------------
+    // MARK: PUBLIC INITIALIZERS
+    //--------------------------------------------------------------------------
     
     public init() { }
     
+    //--------------------------------------------------------------------------
+    // MARK: PUBLIC METHODS
+    //--------------------------------------------------------------------------
+    
+    /// Return list of currently running processes
     public static func list() -> [ProcessInfo] {
-        var processInfo = [ProcessInfo]()
-        
-        var pset: processor_set_name_t = 0
-        var result = processor_set_default(mach_host_self(), &pset)
-        
-        if result != KERN_SUCCESS {
-            #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - " +
-                        "processor_set_default")
-            #endif
-            return processInfo
-        }
-        
-        
-        var psets = processor_set_name_array_t.alloc(1)
-        psets.initialize(0)
+        var list                         = [ProcessInfo]()
+        var psets                        = processor_set_name_array_t.alloc(1)
         var pcnt: mach_msg_type_number_t = 0
-        
+
         // Need root
-        result = host_processor_sets(mach_host_self(), &psets, &pcnt)
+        var result = host_processor_sets(machHost, &psets, &pcnt)
         if result != KERN_SUCCESS {
             #if DEBUG
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - Need root - " +
                         "kern_return_t: \(result)")
             #endif
-            return processInfo
+            return list
         }
         
         
-        // TODO: For each CPU?
+        // For each CPU set
         for var i = 0; i < Int(pcnt); ++i {
-            result = host_processor_set_priv(mach_host_self(), psets[i], &pset);
+            var pset: processor_set_name_t = 0
+            result = host_processor_set_priv(machHost, psets[i], &pset)
             
             if result != KERN_SUCCESS {
                 #if DEBUG
-                    println("ERROR - \(__FILE__):\(__FUNCTION__) - CPU \(i)")
+                    println("ERROR - \(__FILE__):\(__FUNCTION__) - CPU set " +
+                            "\(i) - kern_return_t: \(result)")
                 #endif
-                return processInfo
+                continue
             }
             
-            println("CPU \(i) GOOD")
             
+            // Get port to each task
+            var tasks                             = task_array_t.alloc(1)
+            var taskCount: mach_msg_type_number_t = 0
+            result = processor_set_tasks(pset, &tasks, &taskCount)
             
-            var processList = task_array_t.alloc(1)
-            processList.initialize(0)
+            if result != KERN_SUCCESS {
+                #if DEBUG
+                    println("ERROR - \(__FILE__):\(__FUNCTION__) - failed to "
+                            + " get tasks - kern_return_t: \(result)")
+                #endif
+                continue
+            }
+
             
-            var processCount: mach_msg_type_number_t = 0
-            result = processor_set_tasks(pset, &processList, &processCount)
-            
-            println("PROC COUNT: \(processCount)")
-            
-            
-            // For each process
-            for var i = 0; i < Int(processCount); ++i {
-                let process = processList[i]
+            // For each task
+            for var x = 0; x < Int(taskCount); ++x {
+                let task       = tasks[x]
                 var pid: pid_t = 0
                 
-                result = pid_for_task(process, &pid)
+                pid_for_task(task, &pid)
+                
                 
                 // BSD layer only stuff
-                var kinfoProc = kinfo_proc_systemkit(p_stat: 0,
-                                                     p_comm: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                                                     e_ppid: 0,
-                                                     e_pgid: 0,
-                                                        uid: 0)
+                var kinfoProc = kinfo_proc_systemkit(
+                                    p_stat: 0,
+                                    p_comm: (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+                                    e_ppid: 0,
+                                    e_pgid: 0,
+                                       uid: 0)
+                
                 kinfo_for_pid(pid, &kinfoProc)
 
-                // TODO: Is the command cut short for some procs?
-                let procCommand = withUnsafePointer(&kinfoProc.p_comm) {
+                let command = withUnsafePointer(&kinfoProc.p_comm) {
                     String.fromCString(UnsafePointer($0))!
                 }
-
-                println("PID: \(pid); \(procCommand); CPU TYPE: \(arch(pid))")
-//                        "PPID: \(kinfoProc.e_ppid); " +
-//                        "PGID: \(kinfoProc.e_pgid); " +
-//                        "UID: \(kinfoProc.uid); " +
-//                        "STATUS: \(kinfoProc.p_stat)")
                 
-                var machTask = machTaskBasicInfo(process)
                 
-                var tv = timeval(tv_sec: Int(0), tv_usec: 0)
-                var tvp = timeval(tv_sec: Int(machTask.user_time.seconds), tv_usec: Int32(machTask.user_time.microseconds))
-                var uvp = timeval(tv_sec: Int(machTask.system_time.seconds), tv_usec: Int32(machTask.system_time.microseconds))
-                timeradd(tvp, uvp: uvp, vvp: &tv)
-                println("TIME: \(timeFormat(tv))")
+                list.append(ProcessInfo(pid    : Int(pid),
+                                        ppid   : Int(kinfoProc.e_ppid),
+                                        pgid   : Int(kinfoProc.e_pgid),
+                                        uid    : Int(kinfoProc.uid),
+                                        command: command,
+                                        arch   : arch(pid),
+                                        status : Int32(kinfoProc.p_stat)))
                 
-                var procInfo = ProcessInfo(pid: Int(pid),
-                                           ppid: Int(kinfoProc.e_ppid),
-                                           pgid: Int(kinfoProc.e_pgid),
-                                           uid: Int(kinfoProc.uid),
-                                           command: procCommand,
-                                           arch: arch(pid),
-                                           status: Int32(kinfoProc.p_stat))
-                processInfo.append(procInfo)
+                mach_port_deallocate(mach_task_self_, task)
             }
+            
+            // TODO: Missing deallocate for tasks
+            mach_port_deallocate(mach_task_self_, pset)
+            mach_port_deallocate(mach_task_self_, psets[i])
+            
+            // TODO: Why do dealloc calls on tasks and psets fail?
         }
         
-        return processInfo
+        return list
     }
-    
-    
+
     //--------------------------------------------------------------------------
     // MARK: PRIVATE METHODS
     //--------------------------------------------------------------------------
     
-    
-    private static func machTaskBasicInfo(process: task_t) -> mach_task_basic_info {
-        // NOTE: top uses TASK_BASIC_INFO_64 instead, but the mach/task_info.h
-        //       suggests to use MACH_TASK_BASIC_INFO instead
-        var count = MACH_TASK_BASIC_INFO_COUNT
-        var memoryInfo = task_info_t.alloc(Int(MACH_TASK_BASIC_INFO_COUNT))
-        memoryInfo.initialize(0)
+    /// What architecture was this process compiled for?
+    private static func arch(pid: pid_t) -> cpu_type_t {
+        var arch = CPU_TYPE_ANY
         
-        var result = task_info(process, UInt32(MACH_TASK_BASIC_INFO), memoryInfo, &count)
-        
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
-                        + "\(result)")
-            #endif
-            return mach_task_basic_info(virtual_size: 0,
-                                        resident_size: 0,
-                                        resident_size_max: 0,
-                                        user_time: time_value_t(seconds: 0, microseconds: 0),
-                                        system_time: time_value_t(seconds: 0, microseconds: 0),
-                                        policy: 0,
-                                        suspend_count: 0)
-        }
-        
-        let data = UnsafePointer<mach_task_basic_info>(memoryInfo).memory
-        
-        memoryInfo.dealloc(Int(MACH_TASK_BASIC_INFO_COUNT))
-                
-        return data
-    }
-    
-    
-    public static func arch(pid: pid_t) -> cpu_type_t {
-        var arch: cpu_type_t = CPU_TYPE_ANY
-        
-        // "sysctl.proc_cputype" not documented anywhere. Doesn't even show
-        // up when doing sysctl -A. But you can see it if you run sysctl sysctl.
-        // Hard coding it does carry a risk, as it could change down the road.
-        // Hence, top calls sysctlnametomib() first
+        // TODO: "sysctl.proc_cputype" not documented anywhere. Doesn't even
+        // show up when doing sysctl -A. But you can see it if you run
+        // "sysctl sysctl". Hard coding it does carry a risk, as it could change
+        // down the road. Hence, top calls sysctlnametomib() first
         var mib: [Int32] = [0, 103, pid]
-        var len: size_t = UInt(sizeof(cpu_type_t))
+        var len          = size_t(sizeof(cpu_type_t))
         
-        let result = sysctl(&mib, UInt32(mib.count), &arch, &len, nil, 0)
+        let result = sysctl(&mib, u_int(mib.count), &arch, &len, nil, 0)
         
         #if DEBUG
             if result != 0 {
@@ -238,40 +192,5 @@ public struct Process {
         #endif
         
         return arch
-    }
-    
-    
-    //--------------------------------------------------------------------------
-    // MARK: PRIVATE METHODS - HELPERS
-    //--------------------------------------------------------------------------
-    
-    
-    /// Based on macro of the same name from sys/time.h
-    private static func timeradd(tvp: timeval, uvp: timeval, inout vvp: timeval) {
-        vvp.tv_sec  = tvp.tv_sec + uvp.tv_sec
-        vvp.tv_usec = tvp.tv_usec + uvp.tv_usec
-        if (vvp.tv_usec >= 1000000) {
-            vvp.tv_sec++
-            vvp.tv_usec -= 1000000
-        }
-    }
-    
-    
-    private static func timeFormat(tv: timeval) -> String {
-        var timeFormatted = String()
-        
-        let usec = tv.tv_usec
-        let sec  = tv.tv_sec
-        let min  = sec  / 60
-        let hour = min  / 60
-        let day  = hour / 24
-        
-        if (min < 100) {
-            return NSString(format: "%02u:%02u.%02u", min, sec % 60, usec / 10000)
-        }
-        else if (hour < 100) {
-            return  NSString(format: "%02u:%02u:%02u", hour, min % 60, sec % 60)
-        }
-        else { return NSString(format: "%u hrs", hour) }
     }
 }
