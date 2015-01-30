@@ -61,7 +61,7 @@ public struct ProcessInfo {
 }
 
 /// Process API
-public struct Process {
+public struct ProcessAPI {
     
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTIES
