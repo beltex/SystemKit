@@ -66,6 +66,10 @@ println("\tRELEASE:         \(names.release)")
 println("\tVERSION:         \(names.version)")
 println("\tMACHINE:         \(names.machine)")
 
+let uptime = System.uptime()
+println("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +
+                            "\(uptime.secs)s")
+
 println("\tPROCESSES:       \(System.processCount())")
 println("\tTHREADS:         \(System.threadCount())")
 

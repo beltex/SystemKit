@@ -49,6 +49,7 @@ Sample ouput from
   RELEASE:         13.4.0
   VERSION:         Darwin Kernel Version 13.4.0: Sun Aug 17 19:50:11 PDT 2014...
   MACHINE:         x86_64
+  UPTIME:          6d 21h 4m 38s
   PROCESSES:       197
   THREADS:         967
   LOAD AVERAGE:    [3.18, 3.89, 3.99]

@@ -337,7 +337,51 @@ public struct System {
         return (free, active, inactive, wired, compressed)
     }
     
-    
+
+    /// How long has the system been up?
+    public static func uptime() -> (days: Int, hrs: Int, mins: Int, secs: Int) {
+        var currentTime = time_t()
+        var bootTime    = timeval(tv_sec: 0, tv_usec: 0)
+        var mib         = [CTL_KERN, KERN_BOOTTIME]
+
+        // NOTE: Use strideof(), NOT sizeof() to account for data structure
+        // alignment (padding)
+        // http://stackoverflow.com/a/27640066
+        // https://devforums.apple.com/message/1086617#1086617
+        var size = size_t(strideof(timeval))
+
+        let result = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0)
+
+        if result != 0 {
+            #if DEBUG
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                        + "\(result)")
+            #endif
+
+            return (0, 0, 0, 0)
+        }
+
+
+        // Since we don't need anything more than second level accuracy, we use
+        // time() rather than say gettimeofday(), or something else. uptime
+        // command does the same
+        time(&currentTime)
+
+        var uptime = currentTime - bootTime.tv_sec
+
+        let days = uptime / 86400   // Number of seconds in a day
+        uptime %= 86400
+
+        let hrs = uptime / 3600     // Number of seconds in a hour
+        uptime %= 3600
+
+        let mins = uptime / 60
+        let secs = uptime % 60
+
+        return (days, hrs, mins, secs)
+    }
+
+
     //--------------------------------------------------------------------------
     // MARK: PRIVATE METHODS
     //--------------------------------------------------------------------------
