@@ -97,6 +97,23 @@ public struct System {
     }
     
     
+    /// For thermalLevel()
+    public enum ThermalLevel: String {
+        // Comments via <IOKit/pwr_mgt/IOPM.h>
+
+        /// Under normal operating conditions
+        case Normal = "Normal"
+        /// Thermal pressure may cause system slowdown
+        case Danger = "Danger"
+        /// Thermal conditions may cause imminent shutdown
+        case Crisis = "Crisis"
+        /// Thermal warning level has not been published
+        case NotPublished = "Not Published"
+        /// The platform may define additional thermal levels if necessary
+        case Unknown = "Unknown"
+    }
+
+
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTIES
     //--------------------------------------------------------------------------
@@ -450,6 +467,38 @@ public struct System {
         status.dealloc(1)
 
         return (processorSpeed, processorCount, schedulerTime)
+    }
+
+
+    /// Get the thermal level of the system. As seen via 'pmset -g therm'
+    public static func thermalLevel() -> System.ThermalLevel {
+        var thermalLevel: UInt32 = 0
+
+        let result = IOPMGetThermalWarningLevel(&thermalLevel)
+
+        if result == kIOReturnNotFound {
+            return System.ThermalLevel.NotPublished
+        }
+
+
+        #if DEBUG
+            if result != kIOReturnSuccess {
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                        + "\(result)")
+            }
+        #endif
+
+
+        switch Int(thermalLevel) {
+            case kIOPMThermalWarningLevelNormal:
+                return System.ThermalLevel.Normal
+            case kIOPMThermalWarningLevelDanger:
+                return System.ThermalLevel.Danger
+            case kIOPMThermalWarningLevelCrisis:
+                return System.ThermalLevel.Crisis
+            default:
+                return System.ThermalLevel.Unknown
+        }
     }
 
 

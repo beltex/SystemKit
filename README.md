@@ -59,6 +59,7 @@ Sample ouput from
   CPU SPEED LIMIT: 100.0%
   CPUs AVAILABLE:  2
   SCHEDULER LIMIT: 100.0%
+  THERMAL LEVEL:   Not Published
 
 -- BATTERY --
   AC POWERED:      true

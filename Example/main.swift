@@ -85,6 +85,7 @@ println("\tCPU SPEED LIMIT: \(cpuThermalStatus.processorSpeed)%")
 println("\tCPUs AVAILABLE:  \(cpuThermalStatus.processorCount)")
 println("\tSCHEDULER LIMIT: \(cpuThermalStatus.schedulerTime)%")
 
+println("\tTHERMAL LEVEL:   \(System.thermalLevel().rawValue)")
 
 var battery = Battery()
 if battery.open() != kIOReturnSuccess { exit(0) }
