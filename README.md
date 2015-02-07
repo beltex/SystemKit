@@ -55,6 +55,11 @@ Sample ouput from
   LOAD AVERAGE:    [3.18, 3.89, 3.99]
   MACH FACTOR:     [0.436, 0.385, 0.322]
 
+-- POWER --
+  CPU SPEED LIMIT: 100.0%
+  CPUs AVAILABLE:  2
+  SCHEDULER LIMIT: 100.0%
+
 -- BATTERY --
   AC POWERED:      true
   CHARGED:         true

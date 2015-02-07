@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 import Darwin
+import IOKit.pwr_mgt
 import Foundation
 
 //------------------------------------------------------------------------------
@@ -379,6 +380,76 @@ public struct System {
         let secs = uptime % 60
 
         return (days, hrs, mins, secs)
+    }
+
+
+    //--------------------------------------------------------------------------
+    // MARK: POWER
+    //--------------------------------------------------------------------------
+
+
+    /**
+    As seen via 'pmset -g therm' command.
+
+    Via <IOKit/pwr_mgt/IOPMLib.h>:
+
+        processorSpeed: Defines the speed & voltage limits placed on the CPU.
+                        Represented as a percentage (0-100) of maximum CPU
+                        speed.
+
+        processorCount: Reflects how many, if any, CPUs have been taken offline.
+                        Represented as an integer number of CPUs (0 - Max CPUs).
+
+                        NOTE: This doesn't sound quite correct, as pmset treats
+                              it as the number of CPUs available, NOT taken
+                              offline. The return value suggests the same.
+
+        schedulerTime:  Represents the percentage (0-100) of CPU time available.
+                        100% at normal operation. The OS may limit this time for
+                        a percentage less than 100%.
+    */
+    public static func CPUPowerLimit() -> (processorSpeed: Double,
+                                           processorCount: Int,
+                                           schedulerTime : Double) {
+        var processorSpeed = -1.0
+        var processorCount = -1
+        var schedulerTime  = -1.0
+
+        var status = UnsafeMutablePointer<Unmanaged<CFDictionary>?>.alloc(1)
+
+        let result = IOPMCopyCPUPowerStatus(status)
+
+        #if DEBUG
+            // TODO: kIOReturnNotFound case as seen in pmset
+            if result != kIOReturnSuccess {
+                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                        + "\(result)")
+            }
+        #endif
+
+
+        if result == kIOReturnSuccess {
+            if let hasDictionary = status.move()?.takeRetainedValue() {
+                // If CFDictionary were optional, the cast would cause a
+                // compiler crash
+                // https://github.com/practicalswift/swift-compiler-crashes/pull/51
+                let cast = hasDictionary as Dictionary
+
+                // TODO: Force unwrapping here should be safe, as
+                //       IOPMCopyCPUPowerStatus() defines the keys, but the
+                //       the cast (from AnyObject) could be problematic
+                processorSpeed = cast[kIOPMCPUPowerLimitProcessorSpeedKey]!
+                                                                       as Double
+                processorCount = cast[kIOPMCPUPowerLimitProcessorCountKey]!
+                                                                       as Int
+                schedulerTime  = cast[kIOPMCPUPowerLimitSchedulerTimeKey]!
+                                                                       as Double
+            }
+        }
+
+        status.dealloc(1)
+
+        return (processorSpeed, processorCount, schedulerTime)
     }
 
 

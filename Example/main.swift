@@ -78,6 +78,14 @@ println("\tLOAD AVERAGE:    \(loadAverage)")
 println("\tMACH FACTOR:     \(System.machFactor())")
 
 
+println("\n-- POWER --")
+let cpuThermalStatus = System.CPUPowerLimit()
+
+println("\tCPU SPEED LIMIT: \(cpuThermalStatus.processorSpeed)%")
+println("\tCPUs AVAILABLE:  \(cpuThermalStatus.processorCount)")
+println("\tSCHEDULER LIMIT: \(cpuThermalStatus.schedulerTime)%")
+
+
 var battery = Battery()
 if battery.open() != kIOReturnSuccess { exit(0) }
 
