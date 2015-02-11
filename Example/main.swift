@@ -73,7 +73,7 @@ println("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +
 println("\tPROCESSES:       \(System.processCount())")
 println("\tTHREADS:         \(System.threadCount())")
 
-let loadAverage = System.loadAverage().map({ NSString(format:"%.2f", $0) })
+let loadAverage = System.loadAverage().map { NSString(format:"%.2f", $0) }
 println("\tLOAD AVERAGE:    \(loadAverage)")
 println("\tMACH FACTOR:     \(System.machFactor())")
 
