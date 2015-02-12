@@ -220,8 +220,8 @@ public struct System {
         }
 
         var tuple  = ("", "", "", "", "")
-        var names  = UnsafeMutablePointer<utsname>.alloc(1)
-        let result = Foundation.uname(names)
+        var names  = utsname()
+        let result = Foundation.uname(&names)
 
         #if DEBUG
             if result != 0 {
@@ -231,16 +231,14 @@ public struct System {
         #endif
 
         if result == 0 {
-            let sysname  = withUnsafePointer(&names.memory.sysname,  toString)
-            let nodename = withUnsafePointer(&names.memory.nodename, toString)
-            let release  = withUnsafePointer(&names.memory.release,  toString)
-            let version  = withUnsafePointer(&names.memory.version,  toString)
-            let machine  = withUnsafePointer(&names.memory.machine,  toString)
+            let sysname  = withUnsafePointer(&names.sysname,  toString)
+            let nodename = withUnsafePointer(&names.nodename, toString)
+            let release  = withUnsafePointer(&names.release,  toString)
+            let version  = withUnsafePointer(&names.version,  toString)
+            let machine  = withUnsafePointer(&names.machine,  toString)
 
             tuple = (sysname, nodename, release, version, machine)
         }
-
-        names.dealloc(1)
 
         return tuple
     }
