@@ -456,11 +456,11 @@ public struct System {
                 //       IOPMCopyCPUPowerStatus() defines the keys, but the
                 //       the cast (from AnyObject) could be problematic
                 processorSpeed = cast[kIOPMCPUPowerLimitProcessorSpeedKey]!
-                                                                       as Double
+                                                                      as! Double
                 processorCount = cast[kIOPMCPUPowerLimitProcessorCountKey]!
-                                                                       as Int
+                                                                      as! Int
                 schedulerTime  = cast[kIOPMCPUPowerLimitSchedulerTimeKey]!
-                                                                       as Double
+                                                                      as! Double
             }
         }
 

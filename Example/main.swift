@@ -46,7 +46,7 @@ println("\tPHYSICAL SIZE:   \(System.physicalMemory())GB")
 let memoryUsage = System.memoryUsage()
 func memoryUnit(value: Double) -> String {
     if value < 1.0 { return String(Int(value * 1000.0))    + "MB" }
-    else           { return NSString(format:"%.2f", value) + "GB" }
+    else           { return NSString(format:"%.2f", value) as! String + "GB" }
 }
 
 println("\tFREE:            \(memoryUnit(memoryUsage.free))")
