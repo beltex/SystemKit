@@ -120,7 +120,7 @@ public struct System {
     
 
     private static let machHost = mach_host_self()
-    private var loadPrevious = host_cpu_load_info(cpu_ticks: (0,0,0,0))
+    private var loadPrevious = host_cpu_load_info()
     
     
     //--------------------------------------------------------------------------
@@ -359,7 +359,7 @@ public struct System {
     /// How long has the system been up?
     public static func uptime() -> (days: Int, hrs: Int, mins: Int, secs: Int) {
         var currentTime = time_t()
-        var bootTime    = timeval(tv_sec: 0, tv_usec: 0)
+        var bootTime    = timeval()
         var mib         = [CTL_KERN, KERN_BOOTTIME]
 
         // NOTE: Use strideof(), NOT sizeof() to account for data structure
@@ -587,10 +587,7 @@ public struct System {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             #endif
-            return processor_set_load_info(task_count   : 0,
-                                           thread_count : 0,
-                                           load_average : 0,
-                                           mach_factor  : 0)
+            return processor_set_load_info()
         }
 
         
