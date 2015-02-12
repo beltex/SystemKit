@@ -133,27 +133,25 @@ public struct ProcessAPI {
                 
                 
                 // BSD layer only stuff
-                var kinfoProc = kinfo_proc_systemkit(
-                                    p_stat: 0,
-                                    p_comm: (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-                                    e_ppid: 0,
-                                    e_pgid: 0,
-                                       uid: 0)
+                var kinfo = kinfo_proc()
+                var size  = size_t(strideof(kinfo_proc))
+                var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
                 
-                kinfo_for_pid(pid, &kinfoProc)
+                // TODO: Error check
+                sysctl(&mib, u_int(mib.count), &kinfo, &size, nil, 0)
 
-                let command = withUnsafePointer(&kinfoProc.p_comm) {
+                let command = withUnsafePointer(&kinfo.kp_proc.p_comm) {
                     String.fromCString(UnsafePointer($0))!
                 }
                 
                 
                 list.append(ProcessInfo(pid    : Int(pid),
-                                        ppid   : Int(kinfoProc.e_ppid),
-                                        pgid   : Int(kinfoProc.e_pgid),
-                                        uid    : Int(kinfoProc.uid),
+                                        ppid   : Int(kinfo.kp_eproc.e_ppid),
+                                        pgid   : Int(kinfo.kp_eproc.e_pgid),
+                                        uid    : Int(kinfo.kp_eproc.e_ucred.cr_uid),
                                         command: command,
                                         arch   : arch(pid),
-                                        status : Int32(kinfoProc.p_stat)))
+                                        status : Int32(kinfo.kp_proc.p_stat)))
                 
                 mach_port_deallocate(mach_task_self_, task)
             }
