@@ -174,21 +174,39 @@ public struct ProcessAPI {
     private static func arch(pid: pid_t) -> cpu_type_t {
         var arch = CPU_TYPE_ANY
         
-        // TODO: "sysctl.proc_cputype" not documented anywhere. Doesn't even
-        // show up when doing sysctl -A. But you can see it if you run
-        // "sysctl sysctl". Hard coding it does carry a risk, as it could change
-        // down the road. Hence, top calls sysctlnametomib() first
-        var mib: [Int32] = [0, 103, pid]
-        var len          = size_t(sizeof(cpu_type_t))
+        // sysctl.proc_cputype not documented anywhere. Doesn't even show up
+        // when running 'sysctl -A'. Have to call sysctlnametomib() before hand
+        // due to this
+        // TODO: Call sysctlnametomib() only once
+        var mib       = [Int32](count: Int(CTL_MAXNAME), repeatedValue: 0)
+        var mibLength = size_t(CTL_MAXNAME)
         
-        let result = sysctl(&mib, u_int(mib.count), &arch, &len, nil, 0)
+        var result = sysctlnametomib("sysctl.proc_cputype", &mib, &mibLength)
+
+        if result != 0 {
+            #if DEBUG
+                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                        + "\(result)")
+            #endif
+
+            return arch
+        }
         
-        #if DEBUG
-            if result != 0 {
-                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__)")
-            }
-        #endif
         
+        mib[Int(mibLength)] = pid
+        var size = size_t(sizeof(cpu_type_t))
+
+        result = sysctl(&mib, u_int(mibLength + 1), &arch, &size, nil, 0)
+
+        if result != 0 {
+            #if DEBUG
+                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                        + "\(result)")
+            #endif
+
+            arch = CPU_TYPE_ANY
+        }
+
         return arch
     }
 }
