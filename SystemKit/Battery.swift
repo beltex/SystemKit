@@ -296,7 +296,7 @@ public struct Battery {
     */
     public func timeRemainingFormatted() -> String {
         let time = timeRemaining()
-        return NSString(format: "%d:%02d", time / 60, time % 60) as! String
+        return NSString(format: "%d:%02d", time / 60, time % 60) as String
     }
     
     
