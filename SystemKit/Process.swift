@@ -134,7 +134,7 @@ public struct ProcessAPI {
                 
                 // BSD layer only stuff
                 var kinfo = kinfo_proc()
-                var size  = size_t(strideof(kinfo_proc))
+                var size  = strideof(kinfo_proc)
                 var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
                 
                 // TODO: Error check
@@ -194,7 +194,7 @@ public struct ProcessAPI {
         
         
         mib[Int(mibLength)] = pid
-        var size = size_t(sizeof(cpu_type_t))
+        var size = sizeof(cpu_type_t)
 
         result = sysctl(&mib, u_int(mibLength + 1), &arch, &size, nil, 0)
 

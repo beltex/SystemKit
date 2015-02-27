@@ -178,7 +178,7 @@ public struct System {
 
         // Max model name size not defined by sysctl. Instead we use io_name_t
         // via I/O Kit which can also get the model name
-        var size = size_t(sizeof(io_name_t))
+        var size = sizeof(io_name_t)
 
         var ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
         let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
@@ -364,7 +364,7 @@ public struct System {
         // alignment (padding)
         // http://stackoverflow.com/a/27640066
         // https://devforums.apple.com/message/1086617#1086617
-        var size = size_t(strideof(timeval))
+        var size = strideof(timeval)
 
         let result = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0)
 
