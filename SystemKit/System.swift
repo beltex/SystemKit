@@ -443,23 +443,17 @@ public struct System {
         #endif
 
 
-        if result == kIOReturnSuccess {
-            if let hasDictionary = status.move()?.takeRetainedValue() {
-                // If CFDictionary were optional, the cast would cause a
-                // compiler crash
-                // https://github.com/practicalswift/swift-compiler-crashes/pull/51
-                let cast = hasDictionary as Dictionary
-
+        if result == kIOReturnSuccess,
+           let data = status.move()?.takeRetainedValue() as? NSDictionary {
                 // TODO: Force unwrapping here should be safe, as
                 //       IOPMCopyCPUPowerStatus() defines the keys, but the
                 //       the cast (from AnyObject) could be problematic
-                processorSpeed = cast[kIOPMCPUPowerLimitProcessorSpeedKey]!
+                processorSpeed = data[kIOPMCPUPowerLimitProcessorSpeedKey]!
                                                                       as! Double
-                processorCount = cast[kIOPMCPUPowerLimitProcessorCountKey]!
+                processorCount = data[kIOPMCPUPowerLimitProcessorCountKey]!
                                                                       as! Int
-                schedulerTime  = cast[kIOPMCPUPowerLimitSchedulerTimeKey]!
+                schedulerTime  = data[kIOPMCPUPowerLimitSchedulerTimeKey]!
                                                                       as! Double
-            }
         }
 
         status.dealloc(1)
