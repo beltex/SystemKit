@@ -173,7 +173,7 @@ public struct System {
     
     /// Get the model name of this machine. Same as "sysctl hw.model"
     public static func modelName() -> String {
-        var name = String()
+        let name: String
         var mib  = [CTL_HW, HW_MODEL]
 
         // Max model name size not defined by sysctl. Instead we use io_name_t
@@ -183,7 +183,10 @@ public struct System {
         var ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
         let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
 
+
         if result == 0 { name = String.fromCString(UnsafePointer(ptr))! }
+        else           { name = String() }
+
 
         ptr.dealloc(1)
 
@@ -219,7 +222,7 @@ public struct System {
             return String.fromCString(UnsafePointer<CChar>(ptr))!
         }
 
-        var tuple  = ("", "", "", "", "")
+        let tuple: (String, String, String, String, String)
         var names  = utsname()
         let result = Foundation.uname(&names)
 
@@ -238,6 +241,9 @@ public struct System {
             let machine  = withUnsafePointer(&names.machine,  toString)
 
             tuple = (sysname, nodename, release, version, machine)
+        }
+        else {
+            tuple = ("", "", "", "", "")
         }
 
         return tuple
