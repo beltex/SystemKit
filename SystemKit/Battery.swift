@@ -54,7 +54,7 @@ public struct Battery {
     //--------------------------------------------------------------------------
     
     
-    /// Battery property names (keys)
+    /// Battery property keys. Sourced via 'ioreg -brc AppleSmartBattery'
     private enum Key: String {
         case ACPowered        = "ExternalConnected"
         case Amperage         = "Amperage"
