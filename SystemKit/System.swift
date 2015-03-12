@@ -487,12 +487,20 @@ public struct System {
         #endif
 
 
-        switch Int(thermalLevel) {
-            case kIOPMThermalWarningLevelNormal:
+        // TODO: Thermal warning level values no longer available through
+        //       IOKit.pwr_mgt module as of Xcode 6.3 Beta 3. Not sure if thats
+        //       intended behaviour or a bug, will investigate. For now
+        //       hardcoding values, will move all power related calls to a
+        //       separate struct.
+        switch thermalLevel {
+            case 0:
+                // kIOPMThermalWarningLevelNormal
                 return System.ThermalLevel.Normal
-            case kIOPMThermalWarningLevelDanger:
+            case 5:
+                // kIOPMThermalWarningLevelDanger
                 return System.ThermalLevel.Danger
-            case kIOPMThermalWarningLevelCrisis:
+            case 10:
+                // kIOPMThermalWarningLevelCrisis
                 return System.ThermalLevel.Crisis
             default:
                 return System.ThermalLevel.Unknown
