@@ -70,8 +70,9 @@ let uptime = System.uptime()
 println("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +
                             "\(uptime.secs)s")
 
-println("\tPROCESSES:       \(System.processCount())")
-println("\tTHREADS:         \(System.threadCount())")
+let counts = System.processCounts()
+println("\tPROCESSES:       \(counts.processCount)")
+println("\tTHREADS:         \(counts.threadCount)")
 
 let loadAverage = System.loadAverage().map { NSString(format:"%.2f", $0) }
 println("\tLOAD AVERAGE:    \(loadAverage)")

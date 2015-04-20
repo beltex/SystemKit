@@ -314,16 +314,11 @@ public struct System {
                 Double(result.2) / Double(LOAD_SCALE)]
     }
     
-    
-    /// Total number of processes
-    public static func processCount() -> Int {
-        return Int(System.processorLoadInfo().task_count)
-    }
-    
-    
-    /// Total number of threads
-    public static func threadCount() -> Int {
-        return Int(System.processorLoadInfo().thread_count)
+
+    /// Total number of processes & threads
+    public static func processCounts() -> (processCount: Int, threadCount: Int) {
+        let data = System.processorLoadInfo()
+        return (Int(data.task_count), Int(data.thread_count))
     }
     
     
@@ -584,35 +579,41 @@ public struct System {
     private static func processorLoadInfo() -> processor_set_load_info {
         // NOTE: Duplicate load average and mach factor here
         
-        // TODO: Move processor_set_default() call to init()
-        var pset: processor_set_name_t = 0
+        var pset   = processor_set_name_t()
         var result = processor_set_default(machHost, &pset)
         
-        if (result != KERN_SUCCESS) {
+        if result != KERN_SUCCESS {
             #if DEBUG
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             #endif
+
             return processor_set_load_info()
         }
 
         
-        var count = PROCESSOR_SET_LOAD_INFO_COUNT
+        var count    = PROCESSOR_SET_LOAD_INFO_COUNT
         var info_out = processor_set_load_info_t.alloc(1)
         
         result = processor_set_statistics(pset,
                                           PROCESSOR_SET_LOAD_INFO,
                                           UnsafeMutablePointer(info_out),
                                           &count)
-        
-        if (result != KERN_SUCCESS) {
-            #if DEBUG
+
+
+        #if DEBUG
+            if result != KERN_SUCCESS {
                 println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
-            #endif
-        }
-        
-        
+            }
+        #endif
+
+
+        // This is isn't mandatory as I understand it, just helps keep the ref
+        // count correct. This is because the port is to the default processor
+        // set which should exist by default as long as the machine is running
+        mach_port_deallocate(mach_task_self_, pset)
+
         let data = info_out.move()
         info_out.dealloc(1)
         
