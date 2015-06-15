@@ -26,22 +26,22 @@
 
 import SystemKit
 
-println("// MACHINE STATUS")
+print("// MACHINE STATUS")
 
-println("\n-- CPU --")
-println("\tPHYSICAL CORES:  \(System.physicalCores())")
-println("\tLOGICAL CORES:   \(System.logicalCores())")
+print("\n-- CPU --")
+print("\tPHYSICAL CORES:  \(System.physicalCores())")
+print("\tLOGICAL CORES:   \(System.logicalCores())")
 
 var sys = System()
 let cpuUsage = sys.usageCPU()
-println("\tSYSTEM:          \(Int(cpuUsage.system))%")
-println("\tUSER:            \(Int(cpuUsage.user))%")
-println("\tIDLE:            \(Int(cpuUsage.idle))%")
-println("\tNICE:            \(Int(cpuUsage.nice))%")
+print("\tSYSTEM:          \(Int(cpuUsage.system))%")
+print("\tUSER:            \(Int(cpuUsage.user))%")
+print("\tIDLE:            \(Int(cpuUsage.idle))%")
+print("\tNICE:            \(Int(cpuUsage.nice))%")
 
 
-println("\n-- MEMORY --")
-println("\tPHYSICAL SIZE:   \(System.physicalMemory())GB")
+print("\n-- MEMORY --")
+print("\tPHYSICAL SIZE:   \(System.physicalMemory())GB")
 
 let memoryUsage = System.memoryUsage()
 func memoryUnit(value: Double) -> String {
@@ -49,59 +49,59 @@ func memoryUnit(value: Double) -> String {
     else           { return NSString(format:"%.2f", value) as String + "GB" }
 }
 
-println("\tFREE:            \(memoryUnit(memoryUsage.free))")
-println("\tWIRED:           \(memoryUnit(memoryUsage.wired))")
-println("\tACTIVE:          \(memoryUnit(memoryUsage.active))")
-println("\tINACTIVE:        \(memoryUnit(memoryUsage.inactive))")
-println("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
+print("\tFREE:            \(memoryUnit(memoryUsage.free))")
+print("\tWIRED:           \(memoryUnit(memoryUsage.wired))")
+print("\tACTIVE:          \(memoryUnit(memoryUsage.active))")
+print("\tINACTIVE:        \(memoryUnit(memoryUsage.inactive))")
+print("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
 
 
-println("\n-- SYSTEM --")
-println("\tMODEL:           \(System.modelName())")
+print("\n-- SYSTEM --")
+print("\tMODEL:           \(System.modelName())")
 
 let names = System.uname()
-println("\tSYSNAME:         \(names.sysname)")
-println("\tNODENAME:        \(names.nodename)")
-println("\tRELEASE:         \(names.release)")
-println("\tVERSION:         \(names.version)")
-println("\tMACHINE:         \(names.machine)")
+print("\tSYSNAME:         \(names.sysname)")
+print("\tNODENAME:        \(names.nodename)")
+print("\tRELEASE:         \(names.release)")
+print("\tVERSION:         \(names.version)")
+print("\tMACHINE:         \(names.machine)")
 
 let uptime = System.uptime()
-println("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +
+print("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +
                             "\(uptime.secs)s")
 
 let counts = System.processCounts()
-println("\tPROCESSES:       \(counts.processCount)")
-println("\tTHREADS:         \(counts.threadCount)")
+print("\tPROCESSES:       \(counts.processCount)")
+print("\tTHREADS:         \(counts.threadCount)")
 
 let loadAverage = System.loadAverage().map { NSString(format:"%.2f", $0) }
-println("\tLOAD AVERAGE:    \(loadAverage)")
-println("\tMACH FACTOR:     \(System.machFactor())")
+print("\tLOAD AVERAGE:    \(loadAverage)")
+print("\tMACH FACTOR:     \(System.machFactor())")
 
 
-println("\n-- POWER --")
+print("\n-- POWER --")
 let cpuThermalStatus = System.CPUPowerLimit()
 
-println("\tCPU SPEED LIMIT: \(cpuThermalStatus.processorSpeed)%")
-println("\tCPUs AVAILABLE:  \(cpuThermalStatus.processorCount)")
-println("\tSCHEDULER LIMIT: \(cpuThermalStatus.schedulerTime)%")
+print("\tCPU SPEED LIMIT: \(cpuThermalStatus.processorSpeed)%")
+print("\tCPUs AVAILABLE:  \(cpuThermalStatus.processorCount)")
+print("\tSCHEDULER LIMIT: \(cpuThermalStatus.schedulerTime)%")
 
-println("\tTHERMAL LEVEL:   \(System.thermalLevel().rawValue)")
+print("\tTHERMAL LEVEL:   \(System.thermalLevel().rawValue)")
 
 var battery = Battery()
 if battery.open() != kIOReturnSuccess { exit(0) }
 
-println("\n-- BATTERY --")
-println("\tAC POWERED:      \(battery.isACPowered())")
-println("\tCHARGED:         \(battery.isCharged())")
-println("\tCHARGING:        \(battery.isCharging())")
-println("\tCHARGE:          \(battery.charge())%")
-println("\tCAPACITY:        \(battery.currentCapacity()) mAh")
-println("\tMAX CAPACITY:    \(battery.maxCapactiy()) mAh")
-println("\tDESGIN CAPACITY: \(battery.designCapacity()) mAh")
-println("\tCYCLES:          \(battery.cycleCount())")
-println("\tMAX CYCLES:      \(battery.designCycleCount())")
-println("\tTEMPERATURE:     \(battery.temperature())°C")
-println("\tTIME REMAINING:  \(battery.timeRemainingFormatted())")
+print("\n-- BATTERY --")
+print("\tAC POWERED:      \(battery.isACPowered())")
+print("\tCHARGED:         \(battery.isCharged())")
+print("\tCHARGING:        \(battery.isCharging())")
+print("\tCHARGE:          \(battery.charge())%")
+print("\tCAPACITY:        \(battery.currentCapacity()) mAh")
+print("\tMAX CAPACITY:    \(battery.maxCapactiy()) mAh")
+print("\tDESGIN CAPACITY: \(battery.designCapacity()) mAh")
+print("\tCYCLES:          \(battery.cycleCount())")
+print("\tMAX CYCLES:      \(battery.designCycleCount())")
+print("\tTEMPERATURE:     \(battery.temperature())°C")
+print("\tTIME REMAINING:  \(battery.timeRemainingFormatted())")
 
 battery.close()

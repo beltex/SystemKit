@@ -107,7 +107,7 @@ public struct Battery {
     public mutating func open() -> kern_return_t {
         if (service != 0) {
             #if DEBUG
-                println("WARNING - \(__FILE__):\(__FUNCTION__) - " +
+                print("WARNING - \(__FILE__):\(__FUNCTION__) - " +
                         "\(Battery.IOSERVICE_BATTERY) connection already open")
             #endif
             return kIOReturnStillOpen
@@ -116,11 +116,11 @@ public struct Battery {
         
         // TODO: Could there be more than one service? serveral batteries?
         service = IOServiceGetMatchingService(kIOMasterPortDefault,
-         IOServiceNameMatching(Battery.IOSERVICE_BATTERY).takeUnretainedValue())
+                  IOServiceNameMatching(Battery.IOSERVICE_BATTERY))
         
         if (service == 0) {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - " +
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - " +
                         "\(Battery.IOSERVICE_BATTERY) service not found")
             #endif
             return kIOReturnNotFound
@@ -141,7 +141,7 @@ public struct Battery {
         
         #if DEBUG
             if (result != kIOReturnSuccess) {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - Failed to close")
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - Failed to close")
             }
         #endif
         

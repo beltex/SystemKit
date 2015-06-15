@@ -89,7 +89,7 @@ public struct ProcessAPI {
         var result = host_processor_sets(machHost, &psets, &pcnt)
         if result != KERN_SUCCESS {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - Need root - " +
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - Need root - " +
                         "kern_return_t: \(result)")
             #endif
             return list
@@ -103,7 +103,7 @@ public struct ProcessAPI {
             
             if result != KERN_SUCCESS {
                 #if DEBUG
-                    println("ERROR - \(__FILE__):\(__FUNCTION__) - CPU set " +
+                    print("ERROR - \(__FILE__):\(__FUNCTION__) - CPU set " +
                             "\(i) - kern_return_t: \(result)")
                 #endif
                 continue
@@ -117,7 +117,7 @@ public struct ProcessAPI {
             
             if result != KERN_SUCCESS {
                 #if DEBUG
-                    println("ERROR - \(__FILE__):\(__FUNCTION__) - failed to "
+                    print("ERROR - \(__FILE__):\(__FUNCTION__) - failed to "
                             + " get tasks - kern_return_t: \(result)")
                 #endif
                 continue
@@ -185,7 +185,7 @@ public struct ProcessAPI {
 
         if result != 0 {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                print("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
                         + "\(result)")
             #endif
 
@@ -200,7 +200,7 @@ public struct ProcessAPI {
 
         if result != 0 {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                print("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
                         + "\(result)")
             #endif
 

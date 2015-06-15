@@ -180,7 +180,7 @@ public struct System {
         // via I/O Kit which can also get the model name
         var size = sizeof(io_name_t)
 
-        var ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
+        let ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
         let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
 
 
@@ -192,7 +192,7 @@ public struct System {
 
         #if DEBUG
             if result != 0 {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
                         + "\(result)")
             }
         #endif
@@ -228,7 +228,7 @@ public struct System {
 
         #if DEBUG
             if result != 0 {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
                         + "\(result)")
             }
         #endif
@@ -371,7 +371,7 @@ public struct System {
 
         if result != 0 {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
                         + "\(result)")
             #endif
 
@@ -431,14 +431,14 @@ public struct System {
         var processorCount = -1
         var schedulerTime  = -1.0
 
-        var status = UnsafeMutablePointer<Unmanaged<CFDictionary>?>.alloc(1)
+        let status = UnsafeMutablePointer<Unmanaged<CFDictionary>?>.alloc(1)
 
         let result = IOPMCopyCPUPowerStatus(status)
 
         #if DEBUG
             // TODO: kIOReturnNotFound case as seen in pmset
             if result != kIOReturnSuccess {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -476,7 +476,7 @@ public struct System {
 
         #if DEBUG
             if result != kIOReturnSuccess {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -512,7 +512,7 @@ public struct System {
         // TODO: Why is host_basic_info.max_mem val different from sysctl?
         
         var size     = HOST_BASIC_INFO_COUNT
-        var hostInfo = host_basic_info_t.alloc(1)
+        let hostInfo = host_basic_info_t.alloc(1)
         
         let result = host_info(machHost, HOST_BASIC_INFO,
                                          UnsafeMutablePointer(hostInfo),
@@ -523,7 +523,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -534,7 +534,7 @@ public struct System {
     
     private static func hostLoadInfo() -> host_load_info {
         var size     = HOST_LOAD_INFO_COUNT
-        var hostInfo = host_load_info_t.alloc(1)
+        let hostInfo = host_load_info_t.alloc(1)
         
         let result = host_statistics(machHost, HOST_LOAD_INFO,
                                                UnsafeMutablePointer(hostInfo),
@@ -545,7 +545,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -556,7 +556,7 @@ public struct System {
     
     private static func hostCPULoadInfo() -> host_cpu_load_info {
         var size     = HOST_CPU_LOAD_INFO_COUNT
-        var hostInfo = host_cpu_load_info_t.alloc(1)
+        let hostInfo = host_cpu_load_info_t.alloc(1)
         
         let result = host_statistics(machHost, HOST_CPU_LOAD_INFO,
                                                UnsafeMutablePointer(hostInfo),
@@ -567,7 +567,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -584,7 +584,7 @@ public struct System {
         
         if result != KERN_SUCCESS {
             #if DEBUG
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             #endif
 
@@ -593,7 +593,7 @@ public struct System {
 
         
         var count    = PROCESSOR_SET_LOAD_INFO_COUNT
-        var info_out = processor_set_load_info_t.alloc(1)
+        let info_out = processor_set_load_info_t.alloc(1)
         
         result = processor_set_statistics(pset,
                                           PROCESSOR_SET_LOAD_INFO,
@@ -603,7 +603,7 @@ public struct System {
 
         #if DEBUG
             if result != KERN_SUCCESS {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -630,7 +630,7 @@ public struct System {
     */
     private static func VMStatistics64() -> vm_statistics64 {
         var size     = HOST_VM_INFO64_COUNT
-        var hostInfo = vm_statistics64_t.alloc(1)
+        let hostInfo = vm_statistics64_t.alloc(1)
         
         let result = host_statistics64(machHost,
                                        HOST_VM_INFO64,
@@ -642,7 +642,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                println("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
                     + "\(result)")
             }
         #endif
