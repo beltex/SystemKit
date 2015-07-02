@@ -447,15 +447,17 @@ public struct System {
 
 
         if result == kIOReturnSuccess,
-           let data = status.move()?.takeRetainedValue() as? NSDictionary {
+           let data = status.move()?.takeUnretainedValue() {
+                let dataMap = data as NSDictionary
+
                 // TODO: Force unwrapping here should be safe, as
                 //       IOPMCopyCPUPowerStatus() defines the keys, but the
                 //       the cast (from AnyObject) could be problematic
-                processorSpeed = data[kIOPMCPUPowerLimitProcessorSpeedKey]!
+                processorSpeed = dataMap[kIOPMCPUPowerLimitProcessorSpeedKey]!
                                                                       as! Double
-                processorCount = data[kIOPMCPUPowerLimitProcessorCountKey]!
+                processorCount = dataMap[kIOPMCPUPowerLimitProcessorCountKey]!
                                                                       as! Int
-                schedulerTime  = data[kIOPMCPUPowerLimitSchedulerTimeKey]!
+                schedulerTime  = dataMap[kIOPMCPUPowerLimitSchedulerTimeKey]!
                                                                       as! Double
         }
 
