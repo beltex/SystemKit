@@ -57,7 +57,7 @@ public let kIOReturnIPCError         = iokit_common_err(0x2bf)
 /// No such device
 public let kIOReturnNoDevice         = iokit_common_err(0x2c0)
 /// Privilege violation
-public let kIOReturnNotPrivileged    = iokit_common_err(0x2c1)
+//public let kIOReturnNotPrivileged    = iokit_common_err(0x2c1)
 /// Invalid argument
 public let kIOReturnBadArgument      = iokit_common_err(0x2c2)
 /// Device read locked
