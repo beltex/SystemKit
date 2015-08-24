@@ -13,7 +13,7 @@ Apple's top implementation.
 
 ### Requirements
 
-- [Xcode 7 Beta 4](https://developer.apple.com/xcode/downloads/)
+- [Xcode 7 Beta 5](https://developer.apple.com/xcode/downloads/)
 - OS X 10.9+
     - This is due to Swift
 
