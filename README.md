@@ -17,6 +17,23 @@ Apple's top implementation.
 - OS X 10.9+
     - This is due to Swift
 
+### Installation
+
+#### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+
+You can install Carthage with [Homebrew](http://brew.sh) using the following command:
+
+    $ brew update
+    $ brew install carthage
+
+To integrate SystemKit into your Xcode project using Carhage, specify it in your Cartfile:
+
+    github "beltex/SystemKit"
+
+Run `carthage update` to build the framework and drag the built SystemKit.framework into your Xcode project.
+Don't forget to alter your Carthage [building phase for OS X](https://github.com/Carthage/Carthage#if-youre-building-for-os-x).
 
 ### Example
 
