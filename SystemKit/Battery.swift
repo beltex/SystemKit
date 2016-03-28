@@ -107,7 +107,7 @@ public struct Battery {
     public mutating func open() -> kern_return_t {
         if (service != 0) {
             #if DEBUG
-                print("WARNING - \(__FILE__):\(__FUNCTION__) - " +
+                print("WARNING - \(#file):\(#function) - " +
                         "\(Battery.IOSERVICE_BATTERY) connection already open")
             #endif
             return kIOReturnStillOpen
@@ -120,7 +120,7 @@ public struct Battery {
         
         if (service == 0) {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - " +
+                print("ERROR - \(#file):\(#function) - " +
                         "\(Battery.IOSERVICE_BATTERY) service not found")
             #endif
             return kIOReturnNotFound
@@ -141,7 +141,7 @@ public struct Battery {
         
         #if DEBUG
             if (result != kIOReturnSuccess) {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - Failed to close")
+                print("ERROR - \(#file):\(#function) - Failed to close")
             }
         #endif
         
