@@ -89,7 +89,7 @@ public struct ProcessAPI {
         var result = host_processor_sets(machHost, &psets, &pcnt)
         if result != KERN_SUCCESS {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - Need root - " +
+                print("ERROR - \(#file):\(#function) - Need root - " +
                         "kern_return_t: \(result)")
             #endif
             return list
@@ -97,13 +97,13 @@ public struct ProcessAPI {
         
         
         // For each CPU set
-        for var i = 0; i < Int(pcnt); ++i {
+        for i in 0..<Int(pcnt) {
             var pset: processor_set_name_t = 0
             result = host_processor_set_priv(machHost, psets[i], &pset)
             
             if result != KERN_SUCCESS {
                 #if DEBUG
-                    print("ERROR - \(__FILE__):\(__FUNCTION__) - CPU set " +
+                    print("ERROR - \(#file):\(#function) - CPU set " +
                             "\(i) - kern_return_t: \(result)")
                 #endif
                 continue
@@ -117,7 +117,7 @@ public struct ProcessAPI {
             
             if result != KERN_SUCCESS {
                 #if DEBUG
-                    print("ERROR - \(__FILE__):\(__FUNCTION__) - failed to "
+                    print("ERROR - \(#file):\(#function) - failed to "
                             + " get tasks - kern_return_t: \(result)")
                 #endif
                 continue
@@ -125,7 +125,7 @@ public struct ProcessAPI {
 
             
             // For each task
-            for var x = 0; x < Int(taskCount); ++x {
+            for x in 0 ..< Int(taskCount) {
                 let task       = tasks[x]
                 var pid: pid_t = 0
                 
@@ -185,7 +185,7 @@ public struct ProcessAPI {
 
         if result != 0 {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                print("ERROR - \(#file):\(#function):\(#line) - "
                         + "\(result)")
             #endif
 
@@ -200,7 +200,7 @@ public struct ProcessAPI {
 
         if result != 0 {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__):\(__LINE__) - "
+                print("ERROR - \(#file):\(#function):\(#line) - "
                         + "\(result)")
             #endif
 

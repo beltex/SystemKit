@@ -192,7 +192,7 @@ public struct System {
 
         #if DEBUG
             if result != 0 {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                print("ERROR - \(#file):\(#function) - errno = "
                         + "\(result)")
             }
         #endif
@@ -373,7 +373,7 @@ public struct System {
 
         if result != 0 {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
+                print("ERROR - \(#file):\(#function) - errno = "
                         + "\(result)")
             #endif
 
@@ -440,7 +440,7 @@ public struct System {
         #if DEBUG
             // TODO: kIOReturnNotFound case as seen in pmset
             if result != kIOReturnSuccess {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -480,7 +480,7 @@ public struct System {
 
         #if DEBUG
             if result != kIOReturnSuccess {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -527,7 +527,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -549,7 +549,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -571,7 +571,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -588,7 +588,7 @@ public struct System {
         
         if result != KERN_SUCCESS {
             #if DEBUG
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             #endif
 
@@ -607,7 +607,7 @@ public struct System {
 
         #if DEBUG
             if result != KERN_SUCCESS {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                         + "\(result)")
             }
         #endif
@@ -646,7 +646,7 @@ public struct System {
         
         #if DEBUG
             if result != KERN_SUCCESS {
-                print("ERROR - \(__FILE__):\(__FUNCTION__) - kern_result_t = "
+                print("ERROR - \(#file):\(#function) - kern_result_t = "
                     + "\(result)")
             }
         #endif
