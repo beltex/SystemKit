@@ -36,17 +36,17 @@ import Foundation
 // As defined in <mach/tash_info.h>
 
 private let HOST_BASIC_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_basic_info_data_t) / sizeof(integer_t))
+                      UInt32(sizeof(host_basic_info_data_t.self) / sizeof(integer_t.self))
 private let HOST_LOAD_INFO_COUNT          : mach_msg_type_number_t =
-                       UInt32(sizeof(host_load_info_data_t) / sizeof(integer_t))
+                       UInt32(sizeof(host_load_info_data_t.self) / sizeof(integer_t.self))
 private let HOST_CPU_LOAD_INFO_COUNT      : mach_msg_type_number_t =
-                   UInt32(sizeof(host_cpu_load_info_data_t) / sizeof(integer_t))
+                   UInt32(sizeof(host_cpu_load_info_data_t.self) / sizeof(integer_t.self))
 private let HOST_VM_INFO64_COUNT          : mach_msg_type_number_t =
-                      UInt32(sizeof(vm_statistics64_data_t) / sizeof(integer_t))
+                      UInt32(sizeof(vm_statistics64_data_t.self) / sizeof(integer_t.self))
 private let HOST_SCHED_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_sched_info_data_t) / sizeof(integer_t))
+                      UInt32(sizeof(host_sched_info_data_t.self) / sizeof(integer_t.self))
 private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
-              UInt32(sizeof(processor_set_load_info_data_t) / sizeof(natural_t))
+              UInt32(sizeof(processor_set_load_info_data_t.self) / sizeof(natural_t.self))
 
 
 public struct System {
@@ -80,20 +80,20 @@ public struct System {
     */
     public enum Unit : Double {
         // For going from byte to -
-        case Byte     = 1
-        case Kilobyte = 1024
-        case Megabyte = 1048576
-        case Gigabyte = 1073741824
+        case byte     = 1
+        case kilobyte = 1024
+        case megabyte = 1048576
+        case gigabyte = 1073741824
     }
     
     
     /// Options for loadAverage()
     public enum LOAD_AVG {
         /// 5, 30, 60 second samples
-        case SHORT
+        case short
         
         /// 1, 5, 15 minute samples
-        case LONG
+        case long
     }
     
     
@@ -178,17 +178,17 @@ public struct System {
 
         // Max model name size not defined by sysctl. Instead we use io_name_t
         // via I/O Kit which can also get the model name
-        var size = sizeof(io_name_t)
+        var size = sizeof(io_name_t.self)
 
-        let ptr    = UnsafeMutablePointer<io_name_t>.alloc(1)
+        let ptr    = UnsafeMutablePointer<io_name_t>.allocate(capacity: 1)
         let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
 
 
-        if result == 0 { name = String.fromCString(UnsafePointer(ptr))! }
+        if result == 0 { name = String(cString: UnsafePointer(ptr)) }
         else           { name = String() }
 
 
-        ptr.dealloc(1)
+        ptr.deallocate(capacity: 1)
 
         #if DEBUG
             if result != 0 {
@@ -278,16 +278,16 @@ public struct System {
     
     https://en.wikipedia.org/wiki/Load_(computing)
     */
-    public static func loadAverage(type: LOAD_AVG = .LONG) -> [Double] {
-        var avg = [Double](count: 3, repeatedValue: 0)
+    public static func loadAverage(_ type: LOAD_AVG = .long) -> [Double] {
+        var avg = [Double](repeating: 0, count: 3)
         
         switch type {
-            case .SHORT:
+            case .short:
                 let result = System.hostLoadInfo().avenrun
                 avg = [Double(result.0) / Double(LOAD_SCALE),
                        Double(result.1) / Double(LOAD_SCALE),
                        Double(result.2) / Double(LOAD_SCALE)]
-            case .LONG:
+            case .long:
                 getloadavg(&avg, 3)
         }
         
@@ -325,7 +325,7 @@ public struct System {
     
     
     /// Size of physical memory on this machine
-    public static func physicalMemory(unit: Unit = .Gigabyte) -> Double {
+    public static func physicalMemory(_ unit: Unit = .gigabyte) -> Double {
         return Double(System.hostBasicInfo().max_mem) / unit.rawValue
     }
     
@@ -341,17 +341,17 @@ public struct System {
         let stats = System.VMStatistics64()
         
         let free     = Double(stats.free_count) * Double(PAGE_SIZE)
-                                                        / Unit.Gigabyte.rawValue
+                                                        / Unit.gigabyte.rawValue
         let active   = Double(stats.active_count) * Double(PAGE_SIZE)
-                                                        / Unit.Gigabyte.rawValue
+                                                        / Unit.gigabyte.rawValue
         let inactive = Double(stats.inactive_count) * Double(PAGE_SIZE)
-                                                        / Unit.Gigabyte.rawValue
+                                                        / Unit.gigabyte.rawValue
         let wired    = Double(stats.wire_count) * Double(PAGE_SIZE)
-                                                        / Unit.Gigabyte.rawValue
+                                                        / Unit.gigabyte.rawValue
         
         // Result of the compression. This is what you see in Activity Monitor
         let compressed = Double(stats.compressor_page_count) * Double(PAGE_SIZE)
-                                                        / Unit.Gigabyte.rawValue
+                                                        / Unit.gigabyte.rawValue
         
         return (free, active, inactive, wired, compressed)
     }
@@ -367,7 +367,7 @@ public struct System {
         // alignment (padding)
         // http://stackoverflow.com/a/27640066
         // https://devforums.apple.com/message/1086617#1086617
-        var size = strideof(timeval)
+        var size = strideof(timeval.self)
 
         let result = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0)
 
@@ -433,7 +433,7 @@ public struct System {
         var processorCount = -1
         var schedulerTime  = -1.0
 
-        let status = UnsafeMutablePointer<Unmanaged<CFDictionary>?>.alloc(1)
+        let status = UnsafeMutablePointer<Unmanaged<CFDictionary>?>.allocate(capacity: 1)
 
         let result = IOPMCopyCPUPowerStatus(status)
 
@@ -461,7 +461,7 @@ public struct System {
                                                                       as! Double
         }
 
-        status.dealloc(1)
+        status.deallocate(capacity: 1)
 
         return (processorSpeed, processorCount, schedulerTime)
     }
@@ -516,14 +516,14 @@ public struct System {
         // TODO: Why is host_basic_info.max_mem val different from sysctl?
         
         var size     = HOST_BASIC_INFO_COUNT
-        let hostInfo = host_basic_info_t.alloc(1)
+        let hostInfo = host_basic_info_t.allocate(capacity: 1)
         
         let result = host_info(machHost, HOST_BASIC_INFO,
                                          UnsafeMutablePointer(hostInfo),
                                          &size)
         
         let data = hostInfo.move()
-        hostInfo.dealloc(1)
+        hostInfo.deallocate(capacity: 1)
         
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -538,14 +538,14 @@ public struct System {
     
     private static func hostLoadInfo() -> host_load_info {
         var size     = HOST_LOAD_INFO_COUNT
-        let hostInfo = host_load_info_t.alloc(1)
+        let hostInfo = host_load_info_t.allocate(capacity: 1)
         
         let result = host_statistics(machHost, HOST_LOAD_INFO,
                                                UnsafeMutablePointer(hostInfo),
                                                &size)
         
         let data = hostInfo.move()
-        hostInfo.dealloc(1)
+        hostInfo.deallocate(capacity: 1)
         
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -560,14 +560,14 @@ public struct System {
     
     private static func hostCPULoadInfo() -> host_cpu_load_info {
         var size     = HOST_CPU_LOAD_INFO_COUNT
-        let hostInfo = host_cpu_load_info_t.alloc(1)
+        let hostInfo = host_cpu_load_info_t.allocate(capacity: 1)
         
         let result = host_statistics(machHost, HOST_CPU_LOAD_INFO,
                                                UnsafeMutablePointer(hostInfo),
                                                &size)
         
         let data = hostInfo.move()
-        hostInfo.dealloc(1)
+        hostInfo.deallocate(capacity: 1)
         
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -597,7 +597,7 @@ public struct System {
 
         
         var count    = PROCESSOR_SET_LOAD_INFO_COUNT
-        let info_out = processor_set_load_info_t.alloc(1)
+        let info_out = processor_set_load_info_t.allocate(capacity: 1)
         
         result = processor_set_statistics(pset,
                                           PROCESSOR_SET_LOAD_INFO,
@@ -619,7 +619,7 @@ public struct System {
         mach_port_deallocate(mach_task_self_, pset)
 
         let data = info_out.move()
-        info_out.dealloc(1)
+        info_out.deallocate(capacity: 1)
         
         return data
     }
@@ -634,7 +634,7 @@ public struct System {
     */
     private static func VMStatistics64() -> vm_statistics64 {
         var size     = HOST_VM_INFO64_COUNT
-        let hostInfo = vm_statistics64_t.alloc(1)
+        let hostInfo = vm_statistics64_t.allocate(capacity: 1)
         
         let result = host_statistics64(machHost,
                                        HOST_VM_INFO64,
@@ -642,7 +642,7 @@ public struct System {
                                        &size)
 
         let data = hostInfo.move()
-        hostInfo.dealloc(1)
+        hostInfo.deallocate(capacity: 1)
         
         #if DEBUG
             if result != KERN_SUCCESS {

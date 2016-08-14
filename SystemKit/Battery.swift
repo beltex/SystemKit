@@ -43,9 +43,9 @@ public struct Battery {
     
     /// Temperature units
     public enum TemperatureUnit {
-        case Celsius
-        case Fahrenheit
-        case Kelvin
+        case celsius
+        case fahrenheit
+        case kelvin
     }
     
     
@@ -164,7 +164,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.CurrentCapacity.rawValue,
                                                    kCFAllocatorDefault,0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
     
     
@@ -178,7 +178,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.MaxCapacity.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
     
     
@@ -193,7 +193,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.DesignCapacity.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
     
     
@@ -206,7 +206,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.CycleCount.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
     
     
@@ -219,7 +219,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                   Key.DesignCycleCount.rawValue,
                                                   kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
     
     
@@ -232,7 +232,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.ACPowered.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Bool
+        return prop!.takeUnretainedValue() as! Bool
     }
     
     
@@ -245,7 +245,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.IsCharging.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Bool
+        return prop!.takeUnretainedValue() as! Bool
     }
     
     
@@ -258,7 +258,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.FullyCharged.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Bool
+        return prop!.takeUnretainedValue() as! Bool
     }
     
     
@@ -284,7 +284,7 @@ public struct Battery {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.TimeRemaining.rawValue,
                                                    kCFAllocatorDefault, 0)
-        return prop.takeUnretainedValue() as! Int
+        return prop!.takeUnretainedValue() as! Int
     }
 
     
@@ -310,21 +310,21 @@ public struct Battery {
     
     :returns: Battery temperature, by default in Celsius.
     */
-    public func temperature(unit: TemperatureUnit = .Celsius) -> Double {
+    public func temperature(_ unit: TemperatureUnit = .celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
                                                    Key.Temperature.rawValue,
                                                    kCFAllocatorDefault, 0)
         
-        var temperature = prop.takeUnretainedValue() as! Double / 100.0
+        var temperature = prop?.takeUnretainedValue() as! Double / 100.0
         
         switch unit {
-            case .Celsius:
+            case .celsius:
                 // Do nothing - in Celsius by default
                 // Must have complete switch though with executed command
                 break
-            case .Fahrenheit:
+            case .fahrenheit:
                 temperature = Battery.toFahrenheit(temperature)
-            case .Kelvin:
+            case .kelvin:
                 temperature = Battery.toKelvin(temperature)
         }
         
@@ -343,7 +343,7 @@ public struct Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Fahrenheit
     */
-    private static func toFahrenheit(temperature: Double) -> Double {
+    private static func toFahrenheit(_ temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
         return (temperature * 1.8) + 32
     }
@@ -355,7 +355,7 @@ public struct Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Kelvin
     */
-    private static func toKelvin(temperature: Double) -> Double {
+    private static func toKelvin(_ temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Kelvin
         return temperature + 273.15
     }
