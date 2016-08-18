@@ -134,14 +134,15 @@ public struct ProcessAPI {
                 
                 // BSD layer only stuff
                 var kinfo = kinfo_proc()
-                var size  = strideof(kinfo_proc.self)
+                var size  = MemoryLayout<kinfo_proc>.stride
                 var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
                 
                 // TODO: Error check
                 sysctl(&mib, u_int(mib.count), &kinfo, &size, nil, 0)
                 
-                let command = withUnsafePointer(&kinfo.kp_proc.p_comm) {
-                    String(cString: UnsafePointer($0))
+                let command = withUnsafePointer(to: &kinfo.kp_proc.p_comm) {_ in 
+                    // todoString(cString: UnsafePointer($0))
+                    String("")
                 }
                 
                 
@@ -149,7 +150,7 @@ public struct ProcessAPI {
                                         ppid   : Int(kinfo.kp_eproc.e_ppid),
                                         pgid   : Int(kinfo.kp_eproc.e_pgid),
                                         uid    : Int(kinfo.kp_eproc.e_ucred.cr_uid),
-                                        command: command,
+                                        command: command!,
                                         arch   : arch(pid),
                                         status : Int32(kinfo.kp_proc.p_stat)))
                 
@@ -194,7 +195,7 @@ public struct ProcessAPI {
         
         
         mib[Int(mibLength)] = pid
-        var size = sizeof(cpu_type_t.self)
+        var size = MemoryLayout<cpu_type_t>.size
         
         result = sysctl(&mib, u_int(mibLength + 1), &arch, &size, nil, 0)
         

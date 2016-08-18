@@ -36,17 +36,17 @@ import Foundation
 // As defined in <mach/tash_info.h>
 
 private let HOST_BASIC_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_basic_info_data_t.self) / sizeof(integer_t.self))
+                      UInt32(MemoryLayout<host_basic_info_data_t>.size / MemoryLayout<integer_t>.size)
 private let HOST_LOAD_INFO_COUNT          : mach_msg_type_number_t =
-                       UInt32(sizeof(host_load_info_data_t.self) / sizeof(integer_t.self))
+                       UInt32(MemoryLayout<host_load_info_data_t>.size / MemoryLayout<integer_t>.size)
 private let HOST_CPU_LOAD_INFO_COUNT      : mach_msg_type_number_t =
-                   UInt32(sizeof(host_cpu_load_info_data_t.self) / sizeof(integer_t.self))
+                   UInt32(MemoryLayout<host_cpu_load_info_data_t>.size / MemoryLayout<integer_t>.size)
 private let HOST_VM_INFO64_COUNT          : mach_msg_type_number_t =
-                      UInt32(sizeof(vm_statistics64_data_t.self) / sizeof(integer_t.self))
+                      UInt32(MemoryLayout<vm_statistics64_data_t>.size / MemoryLayout<integer_t>.size)
 private let HOST_SCHED_INFO_COUNT         : mach_msg_type_number_t =
-                      UInt32(sizeof(host_sched_info_data_t.self) / sizeof(integer_t.self))
+                      UInt32(MemoryLayout<host_sched_info_data_t>.size / MemoryLayout<integer_t>.size)
 private let PROCESSOR_SET_LOAD_INFO_COUNT : mach_msg_type_number_t =
-              UInt32(sizeof(processor_set_load_info_data_t.self) / sizeof(natural_t.self))
+              UInt32(MemoryLayout<processor_set_load_info_data_t>.size / MemoryLayout<natural_t>.size)
 
 
 public struct System {
@@ -178,13 +178,13 @@ public struct System {
 
         // Max model name size not defined by sysctl. Instead we use io_name_t
         // via I/O Kit which can also get the model name
-        var size = sizeof(io_name_t.self)
+        var size = MemoryLayout<io_name_t>.size
 
         let ptr    = UnsafeMutablePointer<io_name_t>.allocate(capacity: 1)
         let result = sysctl(&mib, u_int(mib.count), ptr, &size, nil, 0)
 
 
-        if result == 0 { name = String(cString: UnsafePointer(ptr)) }
+        if result == 0 { name = String()/**todoString(cString: "")*/ }
         else           { name = String() }
 
 
@@ -367,7 +367,7 @@ public struct System {
         // alignment (padding)
         // http://stackoverflow.com/a/27640066
         // https://devforums.apple.com/message/1086617#1086617
-        var size = strideof(timeval.self)
+        var size = MemoryLayout<timeval>.stride
 
         let result = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0)
 
@@ -514,16 +514,14 @@ public struct System {
     
     private static func hostBasicInfo() -> host_basic_info {
         // TODO: Why is host_basic_info.max_mem val different from sysctl?
+        var size = mach_msg_type_number_t(HOST_BASIC_INFO_COUNT)
+        var hostInfo = host_basic_info()
         
-        var size     = HOST_BASIC_INFO_COUNT
-        let hostInfo = host_basic_info_t.allocate(capacity: 1)
-        
-        let result = host_info(machHost, HOST_BASIC_INFO,
-                                         UnsafeMutablePointer(hostInfo),
-                                         &size)
-        
-        let data = hostInfo.move()
-        hostInfo.deallocate(capacity: 1)
+        let result = withUnsafeMutablePointer(to: &hostInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+                host_info(mach_host_self(), Int32(HOST_BASIC_INFO), $0, &size)
+            }
+        }
         
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -532,21 +530,20 @@ public struct System {
             }
         #endif
         
-        return data
+        return hostInfo
     }
 
     
     private static func hostLoadInfo() -> host_load_info {
-        var size     = HOST_LOAD_INFO_COUNT
-        let hostInfo = host_load_info_t.allocate(capacity: 1)
+        var size = HOST_LOAD_INFO_COUNT
+        var hostInfo = host_load_info()
         
-        let result = host_statistics(machHost, HOST_LOAD_INFO,
-                                               UnsafeMutablePointer(hostInfo),
-                                               &size)
-        
-        let data = hostInfo.move()
-        hostInfo.deallocate(capacity: 1)
-        
+        let result = withUnsafeMutablePointer(to: &hostInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+                host_statistics(mach_host_self(), Int32(HOST_LOAD_INFO), $0, &size)
+            }
+        }
+ 
         #if DEBUG
             if result != KERN_SUCCESS {
                 print("ERROR - \(#file):\(#function) - kern_result_t = "
@@ -554,20 +551,20 @@ public struct System {
             }
         #endif
         
-        return data
+        return hostInfo
     }
     
     
     private static func hostCPULoadInfo() -> host_cpu_load_info {
-        var size     = HOST_CPU_LOAD_INFO_COUNT
-        let hostInfo = host_cpu_load_info_t.allocate(capacity: 1)
+        let HOST_CPU_INFO_COUNT = MemoryLayout<host_cpu_load_info>.stride/MemoryLayout<integer_t>.stride
+        var size = mach_msg_type_number_t(HOST_CPU_INFO_COUNT)
+        var hostInfo = host_cpu_load_info()
         
-        let result = host_statistics(machHost, HOST_CPU_LOAD_INFO,
-                                               UnsafeMutablePointer(hostInfo),
-                                               &size)
-        
-        let data = hostInfo.move()
-        hostInfo.deallocate(capacity: 1)
+        let result = withUnsafeMutablePointer(to: &hostInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+                host_statistics(mach_host_self(), Int32(HOST_CPU_LOAD_INFO), $0, &size)
+            }
+        }
         
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -576,7 +573,7 @@ public struct System {
             }
         #endif
 
-        return data
+        return hostInfo
     }
     
     
@@ -594,16 +591,15 @@ public struct System {
 
             return processor_set_load_info()
         }
-
         
-        var count    = PROCESSOR_SET_LOAD_INFO_COUNT
-        let info_out = processor_set_load_info_t.allocate(capacity: 1)
+        var size     = PROCESSOR_SET_LOAD_INFO_COUNT
+        var hostInfo = processor_set_load_info()
         
-        result = processor_set_statistics(pset,
-                                          PROCESSOR_SET_LOAD_INFO,
-                                          UnsafeMutablePointer(info_out),
-                                          &count)
-
+        result = withUnsafeMutablePointer(to: &hostInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+                processor_set_statistics(pset, Int32(PROCESSOR_SET_LOAD_INFO), $0, &size)
+            }
+        }
 
         #if DEBUG
             if result != KERN_SUCCESS {
@@ -618,10 +614,7 @@ public struct System {
         // set which should exist by default as long as the machine is running
         mach_port_deallocate(mach_task_self_, pset)
 
-        let data = info_out.move()
-        info_out.deallocate(capacity: 1)
-        
-        return data
+        return hostInfo
     }
     
     
@@ -634,16 +627,14 @@ public struct System {
     */
     private static func VMStatistics64() -> vm_statistics64 {
         var size     = HOST_VM_INFO64_COUNT
-        let hostInfo = vm_statistics64_t.allocate(capacity: 1)
+        var hostInfo = vm_statistics64()
         
-        let result = host_statistics64(machHost,
-                                       HOST_VM_INFO64,
-                                       UnsafeMutablePointer(hostInfo),
-                                       &size)
+        let result = withUnsafeMutablePointer(to: &hostInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+                host_statistics64(machHost, Int32(HOST_VM_INFO64), $0, &size)
+            }
+        }
 
-        let data = hostInfo.move()
-        hostInfo.deallocate(capacity: 1)
-        
         #if DEBUG
             if result != KERN_SUCCESS {
                 print("ERROR - \(#file):\(#function) - kern_result_t = "
@@ -651,6 +642,6 @@ public struct System {
             }
         #endif
         
-        return data
+        return hostInfo
     }
 }
