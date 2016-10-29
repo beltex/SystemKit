@@ -57,7 +57,7 @@ public let kIOReturnIPCError         = iokit_common_err(0x2bf)
 /// No such device
 public let kIOReturnNoDevice         = iokit_common_err(0x2c0)
 /// Privilege violation
-public let kIOReturnNotPrivileged    = iokit_common_err(0x2c1)
+//public let kIOReturnNotPrivileged    = iokit_common_err(0x2c1)
 /// Invalid argument
 public let kIOReturnBadArgument      = iokit_common_err(0x2c2)
 /// Device read locked
@@ -180,7 +180,7 @@ Based on macro of the same name in <IOKit/IOReturn.h>. Generates the error code.
 :param: code The specific I/O Kit error code. Last 14 bits.
 :returns: Full 32 bit error code.
 */
-private func iokit_common_err(code: UInt32) -> kern_return_t {
+private func iokit_common_err(_ code: UInt32) -> kern_return_t {
     // Overflow otherwise
     return Int32(bitPattern: SYS_IOKIT | SUB_IOKIT_COMMON | code)
 }
