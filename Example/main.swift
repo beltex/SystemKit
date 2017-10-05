@@ -104,4 +104,4 @@ print("\tMAX CYCLES:      \(battery.designCycleCount())")
 print("\tTEMPERATURE:     \(battery.temperature())°C")
 print("\tTIME REMAINING:  \(battery.timeRemainingFormatted())")
 
-battery.close()
+_ = battery.close()
