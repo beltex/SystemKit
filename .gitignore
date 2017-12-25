@@ -41,3 +41,8 @@ nbproject
 *.sublime-project
 *.sublime-workspace
 /bin
+
+# SPM
+/.build
+/Packages
+/*.xcodeproj
