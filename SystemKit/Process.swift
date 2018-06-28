@@ -4,7 +4,7 @@
 //
 // The MIT License
 //
-// Copyright (C) 2014, 2015  beltex <https://github.com/beltex>
+// Copyright (C) 2014-2017  beltex <https://github.com/beltex>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -66,8 +66,8 @@ public struct ProcessAPI {
     //--------------------------------------------------------------------------
     // MARK: PRIVATE PROPERTIES
     //--------------------------------------------------------------------------
-    
-    private static let machHost = mach_host_self()
+
+    fileprivate static let machHost = mach_host_self()
     
     //--------------------------------------------------------------------------
     // MARK: PUBLIC INITIALIZERS
@@ -81,16 +81,16 @@ public struct ProcessAPI {
     
     /// Return list of currently running processes
     public static func list() -> [ProcessInfo] {
-        var list                         = [ProcessInfo]()
-        var psets: processor_set_name_array_t?
-        var pcnt: mach_msg_type_number_t = 0
-        
+        var list                                = [ProcessInfo]()
+        var psets: processor_set_name_array_t?  = processor_set_name_array_t.allocate(capacity: 1)
+        var pcnt: mach_msg_type_number_t        = 0
+
         // Need root
         var result = host_processor_sets(machHost, &psets, &pcnt)
         if result != KERN_SUCCESS {
             #if DEBUG
                 print("ERROR - \(#file):\(#function) - Need root - " +
-                    "kern_return_t: \(result)")
+                        "kern_return_t: \(result)")
             #endif
             return list
         }
@@ -104,25 +104,25 @@ public struct ProcessAPI {
             if result != KERN_SUCCESS {
                 #if DEBUG
                     print("ERROR - \(#file):\(#function) - CPU set " +
-                        "\(i) - kern_return_t: \(result)")
+                            "\(i) - kern_return_t: \(result)")
                 #endif
                 continue
             }
             
             
             // Get port to each task
-            var tasks: task_array_t?
-            var taskCount: mach_msg_type_number_t = 0
+            var tasks: task_array_t?                = task_array_t.allocate(capacity: 1)
+            var taskCount: mach_msg_type_number_t   = 0
             result = processor_set_tasks(pset, &tasks, &taskCount)
             
             if result != KERN_SUCCESS {
                 #if DEBUG
                     print("ERROR - \(#file):\(#function) - failed to "
-                        + " get tasks - kern_return_t: \(result)")
+                            + " get tasks - kern_return_t: \(result)")
                 #endif
                 continue
             }
-            
+
             
             // For each task
             for x in 0 ..< Int(taskCount) {
@@ -139,10 +139,9 @@ public struct ProcessAPI {
                 
                 // TODO: Error check
                 sysctl(&mib, u_int(mib.count), &kinfo, &size, nil, 0)
-                
-                let command = withUnsafePointer(to: &kinfo.kp_proc.p_comm) {_ in 
-                    // todoString(cString: UnsafePointer($0))
-                    String("")
+
+                let command = withUnsafePointer(to: &kinfo.kp_proc.p_comm) {
+                    String(cString: UnsafeRawPointer($0).assumingMemoryBound(to: CChar.self))
                 }
                 
                 
@@ -150,7 +149,7 @@ public struct ProcessAPI {
                                         ppid   : Int(kinfo.kp_eproc.e_ppid),
                                         pgid   : Int(kinfo.kp_eproc.e_pgid),
                                         uid    : Int(kinfo.kp_eproc.e_ucred.cr_uid),
-                                        command: command!,
+                                        command: command,
                                         arch   : arch(pid),
                                         status : Int32(kinfo.kp_proc.p_stat)))
                 
@@ -166,13 +165,13 @@ public struct ProcessAPI {
         
         return list
     }
-    
+
     //--------------------------------------------------------------------------
     // MARK: PRIVATE METHODS
     //--------------------------------------------------------------------------
     
     /// What architecture was this process compiled for?
-    private static func arch(_ pid: pid_t) -> cpu_type_t {
+    fileprivate static func arch(_ pid: pid_t) -> cpu_type_t {
         var arch = CPU_TYPE_ANY
         
         // sysctl.proc_cputype not documented anywhere. Doesn't even show up
@@ -183,31 +182,31 @@ public struct ProcessAPI {
         var mibLength = size_t(CTL_MAXNAME)
         
         var result = sysctlnametomib("sysctl.proc_cputype", &mib, &mibLength)
-        
+
         if result != 0 {
             #if DEBUG
                 print("ERROR - \(#file):\(#function):\(#line) - "
-                    + "\(result)")
+                        + "\(result)")
             #endif
-            
+
             return arch
         }
         
         
         mib[Int(mibLength)] = pid
         var size = MemoryLayout<cpu_type_t>.size
-        
+
         result = sysctl(&mib, u_int(mibLength + 1), &arch, &size, nil, 0)
-        
+
         if result != 0 {
             #if DEBUG
                 print("ERROR - \(#file):\(#function):\(#line) - "
-                    + "\(result)")
+                        + "\(result)")
             #endif
-            
+
             arch = CPU_TYPE_ANY
         }
-        
+
         return arch
     }
 }

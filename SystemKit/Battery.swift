@@ -4,7 +4,7 @@
 //
 // The MIT License
 //
-// Copyright (C) 2014, 2015  beltex <https://github.com/beltex>
+// Copyright (C) 2014-2017  beltex <https://github.com/beltex>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ public struct Battery {
     
     
     /// Battery property keys. Sourced via 'ioreg -brc AppleSmartBattery'
-    private enum Key: String {
+    fileprivate enum Key: String {
         case ACPowered        = "ExternalConnected"
         case Amperage         = "Amperage"
         /// Current charge
@@ -80,10 +80,10 @@ public struct Battery {
     
     
     /// Name of the battery IOService as seen in the IORegistry
-    private static let IOSERVICE_BATTERY = "AppleSmartBattery"
+    fileprivate static let IOSERVICE_BATTERY = "AppleSmartBattery"
     
     
-    private var service: io_service_t = 0
+    fileprivate var service: io_service_t = 0
     
     
     //--------------------------------------------------------------------------
@@ -343,7 +343,7 @@ public struct Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Fahrenheit
     */
-    private static func toFahrenheit(_ temperature: Double) -> Double {
+    fileprivate static func toFahrenheit(_ temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Fahrenheit#Definition_and_conversions
         return (temperature * 1.8) + 32
     }
@@ -355,7 +355,7 @@ public struct Battery {
     :param: temperature Temperature in Celsius
     :returns: Temperature in Kelvin
     */
-    private static func toKelvin(_ temperature: Double) -> Double {
+    fileprivate static func toKelvin(_ temperature: Double) -> Double {
         // https://en.wikipedia.org/wiki/Kelvin
         return temperature + 273.15
     }

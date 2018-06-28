@@ -1,20 +1,20 @@
 SystemKit
 =========
 
-An OS X system library in Swift based off of
+A macOS system library in Swift based off of
 [libtop](http://www.opensource.apple.com/source/top/top-100.1.2/libtop.c), from
 Apple's top implementation.
 
 - For an example usage of this library, see
-  [dshb](https://github.com/beltex/dshb), an OS X system monitor in Swift
-- For other system related statistics in Swift for OS X, see
+  [dshb](https://github.com/beltex/dshb), a macOS system monitor in Swift
+- For other system related statistics in Swift for macOS, see
   [SMCKit](https://github.com/beltex/SMCKit)
 
 
 ### Requirements
 
-- [Xcode 7.3](https://developer.apple.com/xcode/downloads/)
-- OS X 10.9+
+- [Xcode 8.3.3](https://developer.apple.com/xcode/downloads/)
+- macOS 10.9+
     - This is due to Swift
 
 ### Installation
@@ -33,7 +33,7 @@ To integrate SystemKit into your Xcode project using Carhage, specify it in your
     github "beltex/SystemKit"
 
 Run `carthage update` to build the framework and drag the built SystemKit.framework into your Xcode project.
-Don't forget to alter your Carthage [building phase for OS X](https://github.com/Carthage/Carthage#if-youre-building-for-os-x).
+Don't forget to alter your Carthage [building phase for macOS](https://github.com/Carthage/Carthage#if-youre-building-for-os-x).
 
 ### Example
 
