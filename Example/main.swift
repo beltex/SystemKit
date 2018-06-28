@@ -74,7 +74,7 @@ let counts = System.processCounts()
 print("\tPROCESSES:       \(counts.processCount)")
 print("\tTHREADS:         \(counts.threadCount)")
 
-let loadAverage = System.loadAverage().map { NSString(format:"%.2f", $0) }
+let loadAverage = System.loadAverage().map { Double(round(100*$0)/100) } // Round to 2 decimals
 print("\tLOAD AVERAGE:    \(loadAverage)")
 print("\tMACH FACTOR:     \(System.machFactor())")
 
