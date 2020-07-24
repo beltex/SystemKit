@@ -1,10 +1,5 @@
-//
-//  Package.swift
-//  SystemKit
-//
-//  Created by Viraj Chitnis on 7/24/20.
-//  Copyright © 2020 beltex. All rights reserved.
-//
+// swift-tools-version:5.2
+// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
