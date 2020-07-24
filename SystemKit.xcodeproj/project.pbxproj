@@ -64,6 +64,7 @@
 		4C543D3A1A08399100C5D9B2 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
 		4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOReturn.swift; sourceTree = "<group>"; };
 		C0E9F63324CB3F5F00648277 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		C0E9F63424CB439D00648277 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +104,7 @@
 		4C543D121A08396700C5D9B2 = {
 			isa = PBXGroup;
 			children = (
+				C0E9F63424CB439D00648277 /* Package.swift */,
 				C0E9F63324CB3F5F00648277 /* .gitignore */,
 				4C543D1E1A08396700C5D9B2 /* SystemKit */,
 				4C543D2B1A08396700C5D9B2 /* SystemKitTests */,
