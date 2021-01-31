@@ -71,6 +71,8 @@ public struct Battery {
         case Temperature      = "Temperature"
         /// Time remaining to charge/discharge
         case TimeRemaining    = "TimeRemaining"
+        case AppleRawCurrentCapacity = "AppleRawCurrentCapacity"
+        case AppleRawMaxCapacity = "AppleRawMaxCapacity"
     }
     
     
@@ -162,7 +164,7 @@ public struct Battery {
     */
     public func currentCapacity() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.CurrentCapacity.rawValue as CFString!,
+                                                   Key.CurrentCapacity.rawValue as CFString?,
                                                    kCFAllocatorDefault,0)
         return prop!.takeUnretainedValue() as! Int
     }
@@ -176,7 +178,7 @@ public struct Battery {
     */
     public func maxCapactiy() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.MaxCapacity.rawValue as CFString!,
+                                                   Key.MaxCapacity.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Int
     }
@@ -191,8 +193,26 @@ public struct Battery {
     */
     public func designCapacity() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.DesignCapacity.rawValue as CFString!,
+                                                   Key.DesignCapacity.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
+        return prop!.takeUnretainedValue() as! Int
+    }
+    
+    // Gennaro
+    public func appleRawMaxCapacity() -> Int {
+        let prop = IORegistryEntryCreateCFProperty(service,
+                                                   Key.AppleRawMaxCapacity.rawValue as CFString?,
+                                                   kCFAllocatorDefault, 0)
+        
+        return prop!.takeUnretainedValue() as! Int
+    }
+    
+    // Gennaro
+    public func appleRawCurrentCapacity() -> Int {
+        let prop = IORegistryEntryCreateCFProperty(service,
+                                                   Key.AppleRawCurrentCapacity.rawValue as CFString?,
+                                                   kCFAllocatorDefault, 0)
+        
         return prop!.takeUnretainedValue() as! Int
     }
     
@@ -204,7 +224,7 @@ public struct Battery {
     */
     public func cycleCount() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.CycleCount.rawValue as CFString!,
+                                                   Key.CycleCount.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Int
     }
@@ -217,7 +237,7 @@ public struct Battery {
     */
     public func designCycleCount() -> Int {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                  Key.DesignCycleCount.rawValue as CFString!,
+                                                   Key.DesignCycleCount.rawValue as CFString?,
                                                   kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Int
     }
@@ -230,7 +250,7 @@ public struct Battery {
     */
     public func isACPowered() -> Bool {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.ACPowered.rawValue as CFString!,
+                                                   Key.ACPowered.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Bool
     }
@@ -243,7 +263,7 @@ public struct Battery {
     */
     public func isCharging() -> Bool {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.IsCharging.rawValue as CFString!,
+                                                   Key.IsCharging.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Bool
     }
@@ -256,7 +276,7 @@ public struct Battery {
     */
     public func isCharged() -> Bool {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.FullyCharged.rawValue as CFString!,
+                                                   Key.FullyCharged.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Bool
     }
@@ -282,7 +302,7 @@ public struct Battery {
     */
     public func timeRemaining() -> Int {        
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.TimeRemaining.rawValue as CFString!,
+                                                   Key.TimeRemaining.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         return prop!.takeUnretainedValue() as! Int
     }
@@ -312,7 +332,7 @@ public struct Battery {
     */
     public func temperature(_ unit: TemperatureUnit = .celsius) -> Double {
         let prop = IORegistryEntryCreateCFProperty(service,
-                                                   Key.Temperature.rawValue as CFString!,
+                                                   Key.Temperature.rawValue as CFString?,
                                                    kCFAllocatorDefault, 0)
         
         var temperature = prop?.takeUnretainedValue() as! Double / 100.0
