@@ -210,46 +210,45 @@ public struct System {
 
     Via uname(3) manual page.
     */
-    // FIXME: Two compiler bugs here. One has a workaround, the other requires
-    //        a C wrapper function. See issue #18
-//    public static func uname() -> (sysname: String, nodename: String,
-//                                                     release: String,
-//                                                     version: String,
-//                                                     machine: String) {
-//        // Takes a generic pointer type because the type were dealing with
-//        // (from the utsname struct) is a huge tuple of Int8s (once bridged to
-//        // Swift), so it would be really messy to go that route (would have to
-//        // type it all out explicitly)
-//        func toString<T>(ptr: UnsafePointer<T>) -> String {
-//            return String.fromCString(UnsafePointer<CChar>(ptr))!
-//        }
-//
-//        let tuple: (String, String, String, String, String)
-//        var names  = utsname()
-//        let result = Foundation.uname(&names)
-//
-//        #if DEBUG
-//            if result != 0 {
-//                print("ERROR - \(__FILE__):\(__FUNCTION__) - errno = "
-//                        + "\(result)")
-//            }
-//        #endif
-//
-//        if result == 0 {
-//            let sysname  = withUnsafePointer(&names.sysname,  toString)
-//            let nodename = withUnsafePointer(&names.nodename, toString)
-//            let release  = withUnsafePointer(&names.release,  toString)
-//            let version  = withUnsafePointer(&names.version,  toString)
-//            let machine  = withUnsafePointer(&names.machine,  toString)
-//
-//            tuple = (sysname, nodename, release, version, machine)
-//        }
-//        else {
-//            tuple = ("", "", "", "", "")
-//        }
-//
-//        return tuple
-//    }
+
+    public static func uname() -> (sysname: String, nodename: String,
+                                                     release: String,
+                                                     version: String,
+                                                     machine: String) {
+        // Takes a generic pointer type because the type were dealing with
+        // (from the utsname struct) is a huge tuple of Int8s (once bridged to
+        // Swift), so it would be really messy to go that route (would have to
+        // type it all out explicitly)
+        func toString<T>(ptr: UnsafePointer<T>) -> String {
+            return String(cString: UnsafeRawPointer(ptr).bindMemory(to: CChar.self, capacity: 256))
+        }
+
+        let tuple: (String, String, String, String, String)
+        var names  = utsname()
+        let result = Foundation.uname(&names)
+
+        #if DEBUG
+            if result != 0 {
+                print("ERROR - \(#file):\(#function) - errno = "
+                        + "\(result)")
+            }
+        #endif
+
+        if result == 0 {
+            let sysname  = withUnsafePointer(to: &names.sysname, toString)
+            let nodename = withUnsafePointer(to: &names.nodename, toString)
+            let release  = withUnsafePointer(to: &names.release,  toString)
+            let version  = withUnsafePointer(to: &names.version,  toString)
+            let machine  = withUnsafePointer(to: &names.machine,  toString)
+
+            tuple = (sysname, nodename, release, version, machine)
+        }
+        else {
+            tuple = ("", "", "", "", "")
+        }
+
+        return tuple
+    }
 
 
     /// Number of physical cores on this machine.
