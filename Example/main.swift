@@ -59,12 +59,12 @@ print("\tCOMPRESSED:      \(memoryUnit(memoryUsage.compressed))")
 print("\n-- SYSTEM --")
 print("\tMODEL:           \(System.modelName())")
 
-//let names = System.uname()
-//print("\tSYSNAME:         \(names.sysname)")
-//print("\tNODENAME:        \(names.nodename)")
-//print("\tRELEASE:         \(names.release)")
-//print("\tVERSION:         \(names.version)")
-//print("\tMACHINE:         \(names.machine)")
+let names = System.uname()
+print("\tSYSNAME:         \(names.sysname)")
+print("\tNODENAME:        \(names.nodename)")
+print("\tRELEASE:         \(names.release)")
+print("\tVERSION:         \(names.version)")
+print("\tMACHINE:         \(names.machine)")
 
 let uptime = System.uptime()
 print("\tUPTIME:          \(uptime.days)d \(uptime.hrs)h \(uptime.mins)m " +

@@ -240,7 +240,7 @@
 					};
 					4C543D1B1A08396700C5D9B2 = {
 						CreatedOnToolsVersion = 6.1;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 1240;
 					};
 					4C543D261A08396700C5D9B2 = {
 						CreatedOnToolsVersion = 6.1;
@@ -250,11 +250,11 @@
 			};
 			buildConfigurationList = 4C543D161A08396700C5D9B2 /* Build configuration list for PBXProject "SystemKit" */;
 			compatibilityVersion = "Xcode 12.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = 4C543D121A08396700C5D9B2;
 			productRefGroup = 4C543D1D1A08396700C5D9B2 /* Products */;
@@ -343,7 +343,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -352,7 +352,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
