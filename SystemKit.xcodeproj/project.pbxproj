@@ -9,9 +9,7 @@
 /* Begin PBXBuildFile section */
 		4C4656641A678B9E0091A8CB /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4656631A678B9E0091A8CB /* Process.swift */; };
 		4C4656651A6790A40091A8CB /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4656631A678B9E0091A8CB /* Process.swift */; };
-		4C4BE60A1A083A690085170A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BE6091A083A690085170A /* main.swift */; };
 		4C4BE60E1A083A760085170A /* System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D381A08398500C5D9B2 /* System.swift */; };
-		4C4BE60F1A083A760085170A /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D3A1A08399100C5D9B2 /* Battery.swift */; };
 		4C543D221A08396700C5D9B2 /* SystemKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C543D211A08396700C5D9B2 /* SystemKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C543D281A08396700C5D9B2 /* SystemKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C543D1C1A08396700C5D9B2 /* SystemKit.framework */; };
 		4C543D2F1A08396700C5D9B2 /* SystemKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D2E1A08396700C5D9B2 /* SystemKitTests.swift */; };
@@ -19,6 +17,7 @@
 		4C543D3B1A08399100C5D9B2 /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D3A1A08399100C5D9B2 /* Battery.swift */; };
 		4C6D98B81A3A8FF500BA2B36 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */; };
 		4C6D98B91A3A905E00BA2B36 /* IOReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */; };
+		5DD5A0002867EFB9002B1A5E /* Battery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C543D3A1A08399100C5D9B2 /* Battery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +62,7 @@
 		4C543D381A08398500C5D9B2 /* System.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = System.swift; sourceTree = "<group>"; };
 		4C543D3A1A08399100C5D9B2 /* Battery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Battery.swift; sourceTree = "<group>"; };
 		4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOReturn.swift; sourceTree = "<group>"; };
+		5D7A193C2868E03100A6009C /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +127,7 @@
 				4C4656631A678B9E0091A8CB /* Process.swift */,
 				4C6D98B71A3A8FF500BA2B36 /* IOReturn.swift */,
 				4C543D211A08396700C5D9B2 /* SystemKit.h */,
+				5D7A193C2868E03100A6009C /* Package.swift */,
 				4C543D1F1A08396700C5D9B2 /* Supporting Files */,
 			);
 			path = SystemKit;
@@ -236,7 +237,7 @@
 				TargetAttributes = {
 					4C4BE6061A083A690085170A = {
 						CreatedOnToolsVersion = 6.1;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 1240;
 					};
 					4C543D1B1A08396700C5D9B2 = {
 						CreatedOnToolsVersion = 6.1;
@@ -290,11 +291,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DD5A0002867EFB9002B1A5E /* Battery.swift in Sources */,
 				4C4656651A6790A40091A8CB /* Process.swift in Sources */,
 				4C6D98B91A3A905E00BA2B36 /* IOReturn.swift in Sources */,
 				4C4BE60E1A083A760085170A /* System.swift in Sources */,
-				4C4BE60F1A083A760085170A /* Battery.swift in Sources */,
-				4C4BE60A1A083A690085170A /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,7 +343,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -352,7 +352,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -412,7 +412,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -468,7 +468,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -497,7 +497,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -523,7 +523,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "beltex.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -547,7 +547,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "beltex.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -567,7 +567,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "beltex.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
